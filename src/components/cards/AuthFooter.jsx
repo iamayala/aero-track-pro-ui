@@ -16,9 +16,9 @@ export default function AuthFooter() {
         textAlign={{ xs: 'center', sm: 'inherit' }}
       >
         <Typography variant="subtitle2" color="secondary">
-          This site is protected by{' '}
-          <Typography component={Link} variant="subtitle2" href="#mantis-privacy" target="_blank" underline="hover">
-            Privacy Policy
+          Made by{' '}
+          <Typography component={Link} variant="subtitle2" href="" target="_blank" underline="hover">
+            Owner
           </Typography>
         </Typography>
 
@@ -27,7 +27,7 @@ export default function AuthFooter() {
             variant="subtitle2"
             color="secondary"
             component={Link}
-            href="https://codedthemes.com"
+            href=""
             target="_blank"
             underline="hover"
           >
@@ -37,21 +37,11 @@ export default function AuthFooter() {
             variant="subtitle2"
             color="secondary"
             component={Link}
-            href="https://codedthemes.com"
+            href=""
             target="_blank"
             underline="hover"
           >
             Privacy Policy
-          </Typography>
-          <Typography
-            variant="subtitle2"
-            color="secondary"
-            component={Link}
-            href="https://codedthemes.com"
-            target="_blank"
-            underline="hover"
-          >
-            CA Privacy Notice
           </Typography>
         </Stack>
       </Stack>

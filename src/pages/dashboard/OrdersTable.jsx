@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 // material-ui
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,106 +9,33 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
-// third-party
-import { NumericFormat } from 'react-number-format';
+import IconButton from '@mui/material/IconButton';
 
 // project import
 import Dot from 'components/@extended/Dot';
-
-function createData(tracking_no, name, fat, carbs, protein) {
-  return { tracking_no, name, fat, carbs, protein };
-}
-
-const rows = [
-  createData(84564564, 'Camera Lens', 40, 2, 40570),
-  createData(98764564, 'Laptop', 300, 0, 180139),
-  createData(98756325, 'Mobile', 355, 1, 90989),
-  createData(98652366, 'Handset', 50, 1, 10239),
-  createData(13286564, 'Computer Accessories', 100, 1, 83348),
-  createData(86739658, 'TV', 99, 0, 410780),
-  createData(13256498, 'Keyboard', 125, 2, 70999),
-  createData(98753263, 'Mouse', 89, 2, 10570),
-  createData(98753275, 'Desktop', 185, 1, 98063),
-  createData(98753291, 'Chair', 100, 0, 14001)
-];
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-const headCells = [
-  {
-    id: 'tracking_no',
-    align: 'left',
-    disablePadding: false,
-    label: 'Tracking No.'
-  },
-  {
-    id: 'name',
-    align: 'left',
-    disablePadding: true,
-    label: 'Product Name'
-  },
-  {
-    id: 'fat',
-    align: 'right',
-    disablePadding: false,
-    label: 'Total Order'
-  },
-  {
-    id: 'carbs',
-    align: 'left',
-    disablePadding: false,
-
-    label: 'Status'
-  },
-  {
-    id: 'protein',
-    align: 'right',
-    disablePadding: false,
-    label: 'Total Amount'
-  }
-];
+import MainCard from 'components/MainCard';
+import { CheckCircleOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { useCallback, useState } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
-function OrderTableHead({ order, orderBy }) {
+function OrderTableHead({ headCells, hasAction }) {
   return (
     <TableHead>
       <TableRow>
-        {headCells.map((headCell) => (
+        {headCells.map((headCell, index) => (
           <TableCell
-            key={headCell.id}
-            align={headCell.align}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
+            key={index}
           >
-            {headCell.label}
+            {headCell}
           </TableCell>
         ))}
+
+        {hasAction &&
+        <TableCell>
+            ACTION
+          </TableCell>}
       </TableRow>
     </TableHead>
   );
@@ -147,11 +73,47 @@ function OrderStatus({ status }) {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable() {
-  const order = 'asc';
-  const orderBy = 'tracking_no';
+export default function OrderTable({headCells, data,hasAction=true, canView=true, canEdit=true, canDelete=true, onPressAction}) {
+
+  const handlePressAction = useCallback((action, row) => {
+    onPressAction(action, row)
+  }, [onPressAction])
+
+  const [open, setOpen] = useState(false)
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
+      <MainCard  content={true} style={{ width: '100%' }}>
+
+        <Dialog
+  // selectedValue={selectedValue}
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+>
+   <DialogTitle id="alert-dialog-title">
+          You are to delete a record
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You are about to delete this item, note that this action can not be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} variant="contained" color="secondary">Cancel</Button>
+          <Button onClick={handleClose} variant="contained" autoFocus color="error">
+            Delete
+          </Button>
+        </DialogActions>
+</Dialog>
     <Box>
       <TableContainer
         sx={{
@@ -164,30 +126,45 @@ export default function OrderTable() {
         }}
       >
         <Table aria-labelledby="tableTitle">
-          <OrderTableHead order={order} orderBy={orderBy} />
+          <OrderTableHead headCells={headCells} hasAction={hasAction} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
+            {data.map((row, index) => {
               return (
                 <TableRow
                   hover
                   role="checkbox"
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   tabIndex={-1}
-                  key={row.tracking_no}
+                  key={index}
                 >
-                  <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.tracking_no}</Link>
-                  </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
+                  {Object.entries(row).map(([key, value]) => (
+                    <TableCell key={key}>
+                      {key === 'status' ? (
+                        <OrderStatus status={value} />
+                      ) : (
+                        value
+                      )}
+                    </TableCell>
+                  ))}
+                {hasAction &&
                   <TableCell>
-                    <OrderStatus status={row.carbs} />
-                  </TableCell>
-                  <TableCell align="right">
-                    <NumericFormat value={row.protein} displayType="text" thousandSeparator prefix="$" />
-                  </TableCell>
+                    <Stack direction={"row"}  gap={"10px"}>
+                      {canView &&
+                          <IconButton color="success" size="small" onClick={() => handlePressAction("VIEW", row)}>
+                            <EyeOutlined style={{ fontSize: '1.15rem' }} />
+                          </IconButton> }
+
+                        {canEdit &&
+                          <IconButton color="warning" size="small" onClick={() => handlePressAction("EDIT", row)}>
+                            <EditOutlined style={{ fontSize: '1.15rem' }} />
+                          </IconButton> }
+                          
+                          {canDelete &&
+                          <IconButton color="error" size="small" onClick={() => {handleClickOpen(); handlePressAction("DELETE", row)}}>
+                              <DeleteOutlined style={{ fontSize: '1.15rem' }} />
+                          </IconButton> }
+                    </Stack>
+                  </TableCell> }
                 </TableRow>
               );
             })}
@@ -195,9 +172,13 @@ export default function OrderTable() {
         </Table>
       </TableContainer>
     </Box>
+      </MainCard >
+
   );
 }
 
-OrderTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
+OrderTable.propTypes = { OrderTable: PropTypes.arrayOf(PropTypes.any), data: PropTypes.arrayOf(PropTypes.any), hasAction: PropTypes.bool, canView: PropTypes.bool, canEdit: PropTypes.bool, canDelete: PropTypes.bool, onPressAction: PropTypes.func};
+
+OrderTableHead.propTypes = { headCells: PropTypes.arrayOf(PropTypes.any), hasAction: PropTypes.bool };
 
 OrderStatus.propTypes = { status: PropTypes.number };

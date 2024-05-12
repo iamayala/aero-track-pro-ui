@@ -19,7 +19,6 @@ import MonthlyBarChart from './MonthlyBarChart';
 import ReportAreaChart from './ReportAreaChart';
 import UniqueVisitorCard from './UniqueVisitorCard';
 import SaleReportCard from './SaleReportCard';
-import OrdersTable from './OrdersTable';
 
 // assets
 import GiftOutlined from '@ant-design/icons/GiftOutlined';
@@ -103,9 +102,6 @@ export default function DashboardDefault() {
           </Grid>
           <Grid item />
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <OrdersTable />
-        </MainCard>
       </Grid>
       <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">

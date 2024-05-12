@@ -11,11 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import AppBarStyled from './AppBarStyled';
 import HeaderContent from './HeaderContent';
 
-import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
-
-// assets
-import MenuFoldOutlined from '@ant-design/icons/MenuFoldOutlined';
-import MenuUnfoldOutlined from '@ant-design/icons/MenuUnfoldOutlined';
+import { useGetMenuMaster } from 'api/menu';
 
 // ==============================|| MAIN LAYOUT - HEADER ||============================== //
 
@@ -29,23 +25,9 @@ export default function Header() {
   // header content
   const headerContent = useMemo(() => <HeaderContent />, []);
 
-  const iconBackColor = 'grey.100';
-  const iconBackColorOpen = 'grey.200';
-
   // common header
   const mainHeader = (
     <Toolbar>
-      <IconButton
-        disableRipple
-        aria-label="open drawer"
-        onClick={() => handlerDrawerOpen(!drawerOpen)}
-        edge="start"
-        color="secondary"
-        variant="light"
-        sx={{ color: 'text.primary', bgcolor: drawerOpen ? iconBackColorOpen : iconBackColor, ml: { xs: 0, lg: -2 } }}
-      >
-        {!drawerOpen ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      </IconButton>
       {headerContent}
     </Toolbar>
   );
