@@ -123,7 +123,7 @@ export default function Profile() {
                           <Stack>
                             <Typography variant="h6">John Doe</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
+                              Admin
                             </Typography>
                           </Stack>
                         </Stack>

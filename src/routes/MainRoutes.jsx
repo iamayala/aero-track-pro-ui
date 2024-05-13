@@ -21,6 +21,7 @@ const TaskOrder = Loadable(lazy(() => import('pages/task-order')));
 const Inventory = Loadable(lazy(() => import('pages/inventory-management')));
 const InventoryOrders = Loadable(lazy(() => import('pages/inventory-orders')));
 const ManageStaff = Loadable(lazy(() => import('pages/staff')));
+const Certification = Loadable(lazy(() => import('pages/certification')));
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -103,6 +104,10 @@ const MainRoutes = {
     {
       path: "manage-staff",
       element: <ManageStaff/>
+    },
+    {
+      path: "certification",
+      element: <Certification/>
     }
   ]
 };

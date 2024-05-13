@@ -5,11 +5,12 @@ import aircraft from './aircraft';
 import task from './task';
 import report from './report';
 import document from './document';
+import certification from './certification';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, task, aircraft, part, document, report]
+  items: [dashboard, task, aircraft, part, document, certification, report]
 };
 
 export default menuItems;

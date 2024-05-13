@@ -55,7 +55,7 @@ export default function DashboardDefault() {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
+      {/* <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -66,15 +66,15 @@ export default function DashboardDefault() {
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
-      </Grid>
+      </Grid> */}
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
       {/* row 2 */}
-      <Grid item xs={12} md={7} lg={8}>
+      <Grid sx={{ display: "none" }} item xs={12} md={7} lg={8}>
         <UniqueVisitorCard />
       </Grid>
-      <Grid item xs={12} md={5} lg={4}>
+      <Grid sx={{ display: "none" }} item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Income Overview</Typography>
@@ -95,7 +95,7 @@ export default function DashboardDefault() {
       </Grid>
 
       {/* row 3 */}
-      <Grid item xs={12} md={7} lg={8}>
+      <Grid sx={{ display: "none" }} item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Recent Orders</Typography>
@@ -103,7 +103,7 @@ export default function DashboardDefault() {
           <Grid item />
         </Grid>
       </Grid>
-      <Grid item xs={12} md={5} lg={4}>
+      <Grid sx={{ display: "none" }} item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Analytics Report</Typography>
@@ -130,10 +130,10 @@ export default function DashboardDefault() {
       </Grid>
 
       {/* row 4 */}
-      <Grid item xs={12} md={7} lg={8}>
+      <Grid sx={{ display: "none" }} item xs={12} md={7} lg={8}>
         <SaleReportCard />
       </Grid>
-      <Grid item xs={12} md={5} lg={4}>
+      <Grid sx={{ display: "none" }} item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Transaction History</Typography>
