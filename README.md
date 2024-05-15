@@ -5,7 +5,7 @@
 1. Clone from Github
 
 ```
-git clone https://github.com/codedthemes/mantis-free-react-admin-template.git
+git clone https://github.com/iamayala/aero-track-pro-ui.git
 ```
 
 2. Install packages
