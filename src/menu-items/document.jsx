@@ -1,7 +1,5 @@
 // assets
-import {
-  FolderOpenOutlined 
-} from '@ant-design/icons';
+import { FolderOpenOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -20,8 +18,7 @@ const document = {
       title: 'Document Management',
       type: 'item',
       url: '/document-management',
-      icon: icons.FolderOpenOutlined,
-      
+      icon: icons.FolderOpenOutlined
     }
   ]
 };

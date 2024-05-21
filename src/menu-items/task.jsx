@@ -1,5 +1,5 @@
 // assets
-import { CalendarOutlined , ProfileOutlined, TeamOutlined  } from '@ant-design/icons';
+import { CalendarOutlined, ProfileOutlined, TeamOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -22,14 +22,14 @@ const task = {
       url: '/maintenance-schedule',
       icon: icons.CalendarOutlined
     },
+    // {
+    //   id: 'task-order',
+    //   title: 'Task and Work Order',
+    //   type: 'item',
+    //   url: '/task-order',
+    //   icon: icons.ProfileOutlined
+    // },
     {
-      id: 'task-order',
-      title: 'Task and Work Order',
-      type: 'item',
-      url: '/task-order',
-      icon: icons.ProfileOutlined
-    },
-     {
       id: 'manage-staff',
       title: 'Manage Staff',
       type: 'item',

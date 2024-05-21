@@ -22,6 +22,7 @@ const Inventory = Loadable(lazy(() => import('pages/inventory-management')));
 const InventoryOrders = Loadable(lazy(() => import('pages/inventory-orders')));
 const ManageStaff = Loadable(lazy(() => import('pages/staff')));
 const Certification = Loadable(lazy(() => import('pages/certification')));
+const Profile = Loadable(lazy(() => import('pages/profile')));
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -62,52 +63,56 @@ const MainRoutes = {
       element: <Typography />
     },
     {
-      path: "inventory-management",
+      path: 'inventory-management',
       element: <Inventory />
     },
-     {
-      path: "aircraft-history",
+    {
+      path: 'aircraft-history',
       element: <AircraftHistory />
     },
     {
-      path: "aircraft-monitoring",
-      element: <AircraftMonitoring/>
+      path: 'aircraft-monitoring',
+      element: <AircraftMonitoring />
     },
     {
-      path: "automated-reports",
-      element: <AutomatedReports/>
+      path: 'automated-reports',
+      element: <AutomatedReports />
     },
     {
-      path: "document-management",
-      element: <DocumentManagement/>
+      path: 'document-management',
+      element: <DocumentManagement />
     },
     {
-      path: "fleet-analytics",
-      element: <FleetAnalytics/>
+      path: 'fleet-analytics',
+      element: <FleetAnalytics />
     },
     {
-      path: "maintenance-schedule",
-      element: <MaintenanceSchedule/>
+      path: 'maintenance-schedule',
+      element: <MaintenanceSchedule />
     },
     {
-      path: "task-order",
-      element: <TaskOrder/>
+      path: 'task-order',
+      element: <TaskOrder />
     },
     {
-      path: "inventory-orders",
-      element: <InventoryOrders/>
+      path: 'inventory-orders',
+      element: <InventoryOrders />
     },
     {
-      path: "compliance-reports",
-      element: <ComplianceReports/>
+      path: 'compliance-reports',
+      element: <ComplianceReports />
     },
     {
-      path: "manage-staff",
-      element: <ManageStaff/>
+      path: 'manage-staff',
+      element: <ManageStaff />
     },
     {
-      path: "certification",
-      element: <Certification/>
+      path: 'certification',
+      element: <Certification />
+    },
+    {
+      path: 'profile',
+      element: <Profile />
     }
   ]
 };

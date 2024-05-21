@@ -55,29 +55,29 @@ export default function DashboardDefault() {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
-      {/* <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <AnalyticEcommerce title="Maintenance Activity Scheduled" count="42" />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
+        <AnalyticEcommerce title="Current Flights" count="2" isDanger />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+        <AnalyticEcommerce title="Aircrafts in Danger" count="0" />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
-      </Grid> */}
+        <AnalyticEcommerce title="Automated Orders" count="2" isDanger />
+      </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
       {/* row 2 */}
-      <Grid sx={{ display: "none" }} item xs={12} md={7} lg={8}>
+      <Grid item xs={12} md={7} lg={8}>
         <UniqueVisitorCard />
       </Grid>
-      <Grid sx={{ display: "none" }} item xs={12} md={5} lg={4}>
+      <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Income Overview</Typography>
+            <Typography variant="h5">Total Flights</Typography>
           </Grid>
           <Grid item />
         </Grid>
@@ -87,7 +87,7 @@ export default function DashboardDefault() {
               <Typography variant="h6" color="text.secondary">
                 This Week Statistics
               </Typography>
-              <Typography variant="h3">$7,650</Typography>
+              <Typography variant="h3">46 Flights</Typography>
             </Stack>
           </Box>
           <MonthlyBarChart />
@@ -95,25 +95,25 @@ export default function DashboardDefault() {
       </Grid>
 
       {/* row 3 */}
-      <Grid sx={{ display: "none" }} item xs={12} md={7} lg={8}>
+      {/* <Grid  item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Recent Orders</Typography>
           </Grid>
           <Grid item />
         </Grid>
-      </Grid>
-      <Grid sx={{ display: "none" }} item xs={12} md={5} lg={4}>
+      </Grid> */}
+      <Grid item xs={12} md={7} lg={12}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Analytics Report</Typography>
+            <Typography variant="h5">Maintenance Reports</Typography>
           </Grid>
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
           <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
             <ListItemButton divider>
-              <ListItemText primary="Company Finance Growth" />
+              <ListItemText primary="Response Time" />
               <Typography variant="h5">+45.14%</Typography>
             </ListItemButton>
             <ListItemButton divider>
@@ -121,7 +121,7 @@ export default function DashboardDefault() {
               <Typography variant="h5">0.58%</Typography>
             </ListItemButton>
             <ListItemButton>
-              <ListItemText primary="Business Risk Cases" />
+              <ListItemText primary="Aircraft Risk Cases" />
               <Typography variant="h5">Low</Typography>
             </ListItemButton>
           </List>
@@ -130,10 +130,10 @@ export default function DashboardDefault() {
       </Grid>
 
       {/* row 4 */}
-      <Grid sx={{ display: "none" }} item xs={12} md={7} lg={8}>
+      <Grid item sx={{ display: 'none' }} xs={12} md={7} lg={12}>
         <SaleReportCard />
       </Grid>
-      <Grid sx={{ display: "none" }} item xs={12} md={5} lg={4}>
+      <Grid sx={{ display: 'none' }} item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Transaction History</Typography>

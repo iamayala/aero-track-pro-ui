@@ -1,8 +1,5 @@
 // assets
-import {
-  FileTextOutlined ,
-  FileProtectOutlined 
-} from '@ant-design/icons';
+import { FileTextOutlined, FileProtectOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {

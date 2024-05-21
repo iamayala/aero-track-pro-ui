@@ -12,21 +12,14 @@ import MainCard from 'components/MainCard';
 
 import { fDate } from 'utils/format-time';
 
-
 export default function DocCard({ item }) {
   return (
-    <MainCard contentSX={{ p: 2.25, cursor: "pointer" }} onClick={()=> {}}>
+    <MainCard contentSX={{ p: 2.25, cursor: 'pointer' }} onClick={() => {}}>
       <Stack spacing={0.5}>
-        <Grid container direction={"column"} alignItems="left">
-            <Grid item>
-              <Chip
-                variant="combined"
-                color={"primary"}
-                label={`${item.document_type}`}
-                sx={{ mb: 1.25}}
-                size="small"
-              />
-            </Grid>
+        <Grid container direction={'column'} alignItems="left">
+          <Grid item>
+            <Chip variant="combined" color={'primary'} label={`${item.document_type}`} sx={{ mb: 1.25 }} size="small" />
+          </Grid>
           <Grid item>
             <Typography variant="h4" color="inherit">
               {item.document_name}
@@ -34,7 +27,7 @@ export default function DocCard({ item }) {
           </Grid>
         </Grid>
         <Typography variant="h6" color="text.secondary">
-         {item.document_description}
+          {item.document_description}
         </Typography>
       </Stack>
       <Box sx={{ pt: 2.25 }}>

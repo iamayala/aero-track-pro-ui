@@ -5,18 +5,16 @@ import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 
 // project import
 import MainCard from 'components/MainCard';
 
 // assets
-import RiseOutlined from '@ant-design/icons/RiseOutlined';
-import FallOutlined from '@ant-design/icons/FallOutlined';
+import { AlertOutlined } from '@ant-design/icons';
 
 const iconSX = { fontSize: '0.75rem', color: 'inherit', marginLeft: 0, marginRight: 0 };
 
-export default function AnalyticEcommerce({ color = 'primary', title, count, percentage, isLoss, extra }) {
+export default function AnalyticEcommerce({ title, count, isDanger }) {
   return (
     <MainCard contentSX={{ p: 2.25 }}>
       <Stack spacing={0.5}>
@@ -25,17 +23,17 @@ export default function AnalyticEcommerce({ color = 'primary', title, count, per
         </Typography>
         <Grid container alignItems="center">
           <Grid item>
-            <Typography variant="h4" color="inherit">
+            <Typography variant="h2" color="inherit">
               {count}
             </Typography>
           </Grid>
-          {percentage && (
+          {isDanger && (
             <Grid item>
               <Chip
                 variant="combined"
-                color={color}
-                icon={isLoss ? <FallOutlined style={iconSX} /> : <RiseOutlined style={iconSX} />}
-                label={`${percentage}%`}
+                color={'error'}
+                icon={<AlertOutlined style={iconSX} />}
+                label={'ALARMING'}
                 sx={{ ml: 1.25, pl: 1 }}
                 size="small"
               />
@@ -43,15 +41,6 @@ export default function AnalyticEcommerce({ color = 'primary', title, count, per
           )}
         </Grid>
       </Stack>
-      <Box sx={{ pt: 2.25 }}>
-        <Typography variant="caption" color="text.secondary">
-          You made an extra{' '}
-          <Typography variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
-            {extra}
-          </Typography>{' '}
-          this year
-        </Typography>
-      </Box>
     </MainCard>
   );
 }
@@ -60,7 +49,5 @@ AnalyticEcommerce.propTypes = {
   color: PropTypes.string,
   title: PropTypes.string,
   count: PropTypes.string,
-  percentage: PropTypes.number,
-  isLoss: PropTypes.bool,
-  extra: PropTypes.string
+  isDanger: PropTypes.bool
 };

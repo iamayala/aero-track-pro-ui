@@ -3,7 +3,7 @@ import { HomeOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  HomeOutlined 
+  HomeOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //

@@ -1,9 +1,5 @@
 // assets
-import {
-  SyncOutlined,
-  FundProjectionScreenOutlined,
-  TableOutlined
-} from '@ant-design/icons';
+import { SyncOutlined, FundProjectionScreenOutlined, TableOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -33,13 +29,13 @@ const aircraft = {
       url: '/aircraft-history',
       icon: icons.SyncOutlined
     },
-     {
+    {
       id: 'fleet-analytics',
       title: 'Fleet Analytics',
       type: 'item',
       url: '/fleet-analytics',
       icon: icons.TableOutlined
-    },
+    }
   ]
 };
 

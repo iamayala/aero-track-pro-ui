@@ -167,19 +167,13 @@ export default function SalesChart() {
     <MainCard sx={{ mt: 1 }} content={false}>
       <Box sx={{ p: 2.5, pb: 0 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack spacing={1.5}>
-            <Typography variant="h6" color="secondary">
-              Net Profit
-            </Typography>
-            <Typography variant="h4">$1560</Typography>
-          </Stack>
           <FormControl component="fieldset">
             <FormGroup row>
               <FormControlLabel
                 control={<Checkbox color="warning" checked={income} onChange={handleLegendChange} name="income" />}
-                label="Income"
+                label="Orders"
               />
-              <FormControlLabel control={<Checkbox checked={cos} onChange={handleLegendChange} name="cos" />} label="Cost of Sales" />
+              <FormControlLabel control={<Checkbox checked={cos} onChange={handleLegendChange} name="cos" />} label="Cost" />
             </FormGroup>
           </FormControl>
         </Stack>

@@ -1,11 +1,9 @@
 // assets
-import {
-  SafetyCertificateOutlined 
-} from '@ant-design/icons';
+import { SafetyCertificateOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-SafetyCertificateOutlined
+  SafetyCertificateOutlined
 };
 
 // ==============================|| MENU ITEMS - UTILITIES ||============================== //

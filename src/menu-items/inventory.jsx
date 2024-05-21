@@ -1,8 +1,5 @@
 // assets
-import {
-  ApiOutlined,
-  FileSyncOutlined
-} from '@ant-design/icons';
+import { ApiOutlined, FileSyncOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -30,7 +27,7 @@ const parts = {
       type: 'item',
       url: '/inventory-orders',
       icon: icons.FileSyncOutlined
-    },
+    }
   ]
 };
 

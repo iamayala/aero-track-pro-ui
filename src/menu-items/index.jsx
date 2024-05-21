@@ -6,11 +6,12 @@ import task from './task';
 import report from './report';
 import document from './document';
 import certification from './certification';
+import profile from './profile';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, task, aircraft, part, document, certification, report]
+  items: [dashboard, task, aircraft, part, document, certification, report, profile]
 };
 
 export default menuItems;
