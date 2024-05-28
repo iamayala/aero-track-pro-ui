@@ -66,7 +66,16 @@ function OrderStatus({ status }) {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable({ headCells, data, hasAction = true, canView = true, canEdit = true, canDelete = true, onPressAction }) {
+export default function OrderTable({
+  headCells,
+  data,
+  hasAction = true,
+  canView = true,
+  canEdit = true,
+  canDelete = true,
+  onPressAction,
+  handleRefresh
+}) {
   const handlePressAction = useCallback(
     (action, row) => {
       onPressAction(action, row);
@@ -119,50 +128,59 @@ export default function OrderTable({ headCells, data, hasAction = true, canView 
             '& td, & th': { whiteSpace: 'nowrap' }
           }}
         >
-          <Table aria-labelledby="tableTitle">
-            <OrderTableHead headCells={headCells} hasAction={hasAction} />
-            <TableBody>
-              {data.map((row, index) => {
-                return (
-                  <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
-                    {Object.entries(row).map(([key, value]) => (
-                      <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
-                    ))}
-                    {hasAction && (
-                      <TableCell>
-                        <Stack direction={'row'} gap={'10px'}>
-                          {canView && (
-                            <IconButton color="success" size="small" onClick={() => handlePressAction('VIEW', row)}>
-                              <EyeOutlined style={{ fontSize: '1.15rem' }} />
-                            </IconButton>
-                          )}
+          {data.length === 0 ? (
+            <Stack sx={{ justifyContent: 'center', alignItems: 'center', paddingBottom: 2 }}>
+              <h3>No data found</h3>
+              <Button onClick={handleRefresh} variant="contained" autoFocus color="primary">
+                Refresh
+              </Button>
+            </Stack>
+          ) : (
+            <Table aria-labelledby="tableTitle">
+              <OrderTableHead headCells={headCells} hasAction={hasAction} />
+              <TableBody>
+                {data.map((row, index) => {
+                  return (
+                    <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
+                      {Object.entries(row).map(([key, value]) => (
+                        <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
+                      ))}
+                      {hasAction && (
+                        <TableCell>
+                          <Stack direction={'row'} gap={'10px'}>
+                            {canView && (
+                              <IconButton color="success" size="small" onClick={() => handlePressAction('VIEW', row)}>
+                                <EyeOutlined style={{ fontSize: '1.15rem' }} />
+                              </IconButton>
+                            )}
 
-                          {canEdit && (
-                            <IconButton color="warning" size="small" onClick={() => handlePressAction('EDIT', row)}>
-                              <EditOutlined style={{ fontSize: '1.15rem' }} />
-                            </IconButton>
-                          )}
+                            {canEdit && (
+                              <IconButton color="warning" size="small" onClick={() => handlePressAction('EDIT', row)}>
+                                <EditOutlined style={{ fontSize: '1.15rem' }} />
+                              </IconButton>
+                            )}
 
-                          {canDelete && (
-                            <IconButton
-                              color="error"
-                              size="small"
-                              onClick={() => {
-                                handleClickOpen();
-                                handlePressAction('DELETE', row);
-                              }}
-                            >
-                              <DeleteOutlined style={{ fontSize: '1.15rem' }} />
-                            </IconButton>
-                          )}
-                        </Stack>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                            {canDelete && (
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={() => {
+                                  handleClickOpen();
+                                  handlePressAction('DELETE', row);
+                                }}
+                              >
+                                <DeleteOutlined style={{ fontSize: '1.15rem' }} />
+                              </IconButton>
+                            )}
+                          </Stack>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
         </TableContainer>
       </Box>
     </MainCard>
@@ -176,7 +194,8 @@ OrderTable.propTypes = {
   canView: PropTypes.bool,
   canEdit: PropTypes.bool,
   canDelete: PropTypes.bool,
-  onPressAction: PropTypes.func
+  onPressAction: PropTypes.func,
+  handleRefresh: PropTypes.func
 };
 
 OrderTableHead.propTypes = { headCells: PropTypes.arrayOf(PropTypes.any), hasAction: PropTypes.bool };

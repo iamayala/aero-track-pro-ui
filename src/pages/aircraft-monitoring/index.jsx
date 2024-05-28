@@ -5,6 +5,8 @@ import PageTitle from 'components/@extended/PageTitle';
 import OrdersTable from '../dashboard/OrdersTable';
 import { fDateTime } from 'utils/format-time';
 import FormSelect from 'components/FormSelect';
+import api from 'api';
+import { useEffect, useState } from 'react';
 
 const data = [
   {
@@ -29,6 +31,8 @@ const data = [
 ];
 
 export default function AircraftMonitoring() {
+  const [aircrafts, setAircrafts] = useState([]);
+  const [activeAircraft, setActiveAircraft] = useState(null);
   const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
 
   const mappedData = data.map((item) => {
@@ -43,11 +47,26 @@ export default function AircraftMonitoring() {
     };
   });
 
+  useEffect(() => {
+    api.aircraft.get().then((response) => {
+      const data = response.data.map((item) => {
+        return {
+          label: item.manufacturer + ' ' + item.model,
+          value: item.id
+        };
+      });
+      setAircrafts(data);
+      setActiveAircraft(data.id);
+    });
+  }, []);
+
   return (
     <Grid container>
       <PageTitle title="Aircraft Monitoring" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
-      <FormSelect />
-      <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
+      <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
+      {aircrafts.length > 0 && activeAircraft && (
+        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
+      )}
     </Grid>
   );
 }

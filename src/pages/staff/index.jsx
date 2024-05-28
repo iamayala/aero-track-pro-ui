@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import PageTitle from 'components/@extended/PageTitle';
 import OrdersTable from '../dashboard/OrdersTable';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Form from 'components/form';
+import api from 'api';
+import Snackbar from 'components/Snackbar';
 
 const data = [
   {
@@ -22,22 +24,68 @@ const data = [
 
 export default function Staff() {
   const [formView, setFormView] = useState(false);
+  const [mappedData, setMappedData] = useState([]);
+  const [formResponse, setFormResponse] = useState({
+    visible: false,
+    message: '',
+    severity: 'error'
+  });
 
   const headCells = ['ID', 'Full Name', 'Email', 'Role', 'Status'];
 
-  const mappedData = data.map((item) => {
-    return {
-      id: item.id,
-      full_name: item.full_name,
-      email: item.email,
-      role: item.role,
-      status: item.status
-    };
-  });
+  const handleFetchUsers = () => {
+    api.user.get().then((user) => {
+      const data = user.data.map((item) => {
+        return {
+          id: item.id,
+          full_name: item.full_name,
+          email: item.email,
+          role: item.role,
+          status: item.status
+        };
+      });
+      setMappedData(data);
+    });
+  };
+
+  useEffect(() => {
+    handleFetchUsers();
+  }, []);
+
+  const handleSaveUser = (data) => {
+    api.user
+      .post({ ...data, password: 'password' })
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'User Saved Successfully',
+            severity: 'success'
+          });
+          handleFetchUsers();
+          setFormView(false);
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
 
   return (
     <Grid container>
       <PageTitle title="Manage Staff" hasButton={!formView} onPressButton={() => setFormView(true)} />
+
+      {formResponse.visible && (
+        <Snackbar
+          message={formResponse.message}
+          severity={formResponse.severity}
+          handleClose={() => setFormResponse({ ...formResponse, visible: false })}
+        />
+      )}
 
       {formView ? (
         <Form
@@ -60,14 +108,18 @@ export default function Staff() {
               name: 'role',
               type: 'select',
               required: true,
-              options: [{ label: 'Technician', value: 'Technician' }]
+              options: [
+                { label: 'Admin', value: 'admin' },
+                { label: 'Technician', value: 'technician' },
+                { label: 'Staff', value: 'staff' }
+              ]
             }
           ]}
-          onSave={(value) => console.log(JSON.stringify(value))}
+          onSave={(value) => handleSaveUser(value)}
           onCancel={() => setFormView(false)}
         />
       ) : (
-        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
+        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} canView={false} />
       )}
     </Grid>
   );

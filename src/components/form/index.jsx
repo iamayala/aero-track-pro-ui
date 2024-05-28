@@ -53,7 +53,7 @@ const Form = ({ fields, onCancel, onSave }) => {
 
   return (
     <Grid container direction={'row'} columnSpacing={2.75}>
-      <Grid item xs={8}>
+      <Grid item xs={12}>
         <MainCard>
           <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
             <Typography variant="h3">Form</Typography>
@@ -61,7 +61,7 @@ const Form = ({ fields, onCancel, onSave }) => {
 
           <Grid container direction={'row'} columnSpacing={2.75} mt={2} mb={1}>
             {fields.map((field) => (
-              <Grid item md={6} mb={2} key={field.name}>
+              <Grid item md={4} mb={2} key={field.name}>
                 <FormControl fullWidth error={!!formErrors[field.name]}>
                   <FormLabel>
                     {field.label} {field.required && ' *'}
@@ -102,7 +102,7 @@ const Form = ({ fields, onCancel, onSave }) => {
           </Stack>
         </MainCard>
       </Grid>
-      <Grid item xs={4}>
+      {/* <Grid item xs={4}>
         <MainCard>
           <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
             <Typography variant="h3">Preview</Typography>
@@ -118,7 +118,7 @@ const Form = ({ fields, onCancel, onSave }) => {
             ))}
           </Stack>
         </MainCard>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

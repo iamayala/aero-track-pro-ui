@@ -7,6 +7,8 @@ import { fDateTime } from 'utils/format-time';
 import { MenuItem, Select, Stack } from '@mui/material';
 import { height } from '@mui/system';
 import FormSelect from 'components/FormSelect';
+import { useEffect, useState } from 'react';
+import api from 'api';
 
 const data = [
   {
@@ -31,6 +33,9 @@ const data = [
 ];
 
 export default function AircraftHistory() {
+  const [aircrafts, setAircrafts] = useState([]);
+  const [activeAircraft, setActiveAircraft] = useState(null);
+
   const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
 
   const mappedData = data.map((item) => {
@@ -45,10 +50,24 @@ export default function AircraftHistory() {
     };
   });
 
+  useEffect(() => {
+    api.aircraft.get().then((response) => {
+      const data = response.data.map((item) => {
+        return {
+          label: item.manufacturer + ' ' + item.model,
+          value: item.id
+        };
+      });
+      setAircrafts(data);
+      setActiveAircraft(data.id);
+    });
+  }, []);
+
   return (
     <Grid container>
       <PageTitle title="History and Logbook" hasButton={false} buttonLabel="Download CSV" onPressButton={() => {}} />
-      <FormSelect />
+
+      <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
       <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
     </Grid>
   );
