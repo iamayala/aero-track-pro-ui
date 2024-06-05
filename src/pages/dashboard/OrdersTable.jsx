@@ -84,6 +84,7 @@ export default function OrderTable({
   );
 
   const [open, setOpen] = useState(false);
+  const [proneToDelete, setProneToDelete] = useState(null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -112,7 +113,15 @@ export default function OrderTable({
           <Button onClick={handleClose} variant="contained" color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleClose} variant="contained" autoFocus color="error">
+          <Button
+            onClick={() => {
+              handleClose();
+              handlePressAction('DELETE', proneToDelete);
+            }}
+            variant="contained"
+            autoFocus
+            color="error"
+          >
             Delete
           </Button>
         </DialogActions>
@@ -165,8 +174,8 @@ export default function OrderTable({
                                 color="error"
                                 size="small"
                                 onClick={() => {
+                                  setProneToDelete(row);
                                   handleClickOpen();
-                                  handlePressAction('DELETE', row);
                                 }}
                               >
                                 <DeleteOutlined style={{ fontSize: '1.15rem' }} />

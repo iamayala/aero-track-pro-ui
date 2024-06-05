@@ -6,25 +6,6 @@ import OrdersTable from '../dashboard/OrdersTable';
 import api from 'api';
 import React from 'react';
 
-const data = [
-  {
-    id: 1,
-    part_id: 1,
-    quantity: 100,
-    order_date: '2024-05-11T22:00:00.000Z',
-    expected_delivery_date: '2024-05-24T22:00:00.000Z',
-    status: 'available',
-    created_at: '2024-05-10T17:52:27.000Z',
-    updated_at: '2024-05-10T17:53:09.000Z',
-    part_number: 'P12345',
-    part_name: 'Engine Spark Plug',
-    manufacturer: 'ACME Corporation',
-    description: 'High-performance spark plug for aircraft engines',
-    unit_price: '50.00',
-    location: 'Warehouse A'
-  }
-];
-
 export default function InventoryOrders() {
   const [mappedData, setMappedData] = React.useState([]);
 

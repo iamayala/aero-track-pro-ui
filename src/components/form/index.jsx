@@ -1,23 +1,11 @@
-import {
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  Grid,
-  ListItem,
-  ListItemText,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Button, FormControl, FormLabel, Grid, MenuItem, Select, Stack, TextField } from '@mui/material';
 import MainCard from 'components/MainCard';
 import React, { useState } from 'react';
 
-const Form = ({ fields, onCancel, onSave }) => {
-  const [formValues, setFormValues] = useState({});
+const Form = ({ fields, initialValues = {}, formType, onCancel, onSave, onEdit }) => {
+  const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
+  const [formTypeLocal, setFormTypeLocal] = useState(formType);
 
   const handleChange = (fieldName) => (event) => {
     setFormValues((prevValues) => ({
@@ -51,14 +39,16 @@ const Form = ({ fields, onCancel, onSave }) => {
     }
   };
 
+  const handleEdit = () => {
+    if (validateForm()) {
+      onEdit(formValues);
+    }
+  };
+
   return (
     <Grid container direction={'row'} columnSpacing={2.75}>
       <Grid item xs={12}>
         <MainCard>
-          <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-            <Typography variant="h3">Form</Typography>
-          </Stack>
-
           <Grid container direction={'row'} columnSpacing={2.75} mt={2} mb={1}>
             {fields.map((field) => (
               <Grid item md={4} mb={2} key={field.name}>
@@ -67,7 +57,7 @@ const Form = ({ fields, onCancel, onSave }) => {
                     {field.label} {field.required && ' *'}
                   </FormLabel>
                   {field.type === 'select' ? (
-                    <Select value={formValues[field.name] || ''} onChange={handleChange(field.name)}>
+                    <Select value={formValues[field.name] || ''} disabled={formTypeLocal === 'VIEW'} onChange={handleChange(field.name)}>
                       <MenuItem value="">Select {field.label}</MenuItem>
                       {field.options.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
@@ -81,10 +71,11 @@ const Form = ({ fields, onCancel, onSave }) => {
                       fullWidth
                       required={field.required}
                       type={field.type}
-                      value={formValues[field.name] || ''}
+                      value={formValues[field.name] || ''} // Use initialValues or empty string
                       onChange={handleChange(field.name)}
                       helperText={formErrors[field.name]}
                       error={!!formErrors[field.name]}
+                      disabled={formTypeLocal === 'VIEW'}
                     />
                   )}
                 </FormControl>
@@ -96,29 +87,16 @@ const Form = ({ fields, onCancel, onSave }) => {
             <Button variant="outlined" onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant="contained" color="primary" onClick={handleSave}>
-              Save
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => (formTypeLocal === 'VIEW' ? setFormTypeLocal('EDIT') : formTypeLocal === 'EDIT' ? handleEdit() : handleSave())}
+            >
+              {formTypeLocal === 'VIEW' ? 'Edit' : 'Save'}
             </Button>
           </Stack>
         </MainCard>
       </Grid>
-      {/* <Grid item xs={4}>
-        <MainCard>
-          <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-            <Typography variant="h3">Preview</Typography>
-          </Stack>
-          <Stack>
-            {Object.entries(formValues).map(([fieldName, value], index) => (
-              <React.Fragment key={fieldName}>
-                <ListItem disableGutters>
-                  <ListItemText primary={fieldName} secondary={value} />
-                </ListItem>
-                {index !== Object.entries(formValues).length - 1 && <Divider />}
-              </React.Fragment>
-            ))}
-          </Stack>
-        </MainCard>
-      </Grid> */}
     </Grid>
   );
 };

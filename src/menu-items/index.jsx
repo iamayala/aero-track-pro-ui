@@ -11,7 +11,16 @@ import profile from './profile';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, task, aircraft, part, document, certification, report, profile]
+  items: [
+    dashboard,
+    task,
+    aircraft,
+    part,
+    document,
+    // certification,
+    report
+    // profile
+  ]
 };
 
 export default menuItems;

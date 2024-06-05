@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import PageTitle from 'components/@extended/PageTitle';
 import OrdersTable from '../dashboard/OrdersTable';
 import { fDateTime } from 'utils/format-time';
+import DownloadCSV from 'utils/DownloadCSV';
 
 const data = [
   {
@@ -42,9 +43,17 @@ export default function ComplianceReports() {
     };
   });
 
+  const _data = [
+    {
+      name: 'James',
+      role: 'Admin'
+    }
+  ];
+
   return (
     <Grid container>
       <PageTitle title="Compliance Reports" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
+      <DownloadCSV data={_data} fileName="employees" />
       <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
     </Grid>
   );

@@ -8,23 +8,13 @@ import Form from 'components/form';
 import api from 'api';
 import Snackbar from 'components/Snackbar';
 
-const data = [
-  {
-    id: 1,
-    username: 'james.cameron',
-    password: '$2b$10$CcTGA.8X16kR7Y5PpTP9t.uXZ2WsNfQwZ3/V/qoR7kY6uEMSWQNwK',
-    email: 'jamescameron@aero.pro',
-    role: 'technician',
-    full_name: 'james jr. cameron',
-    status: 1,
-    created_at: '2024-05-08T09:51:30.000Z',
-    updated_at: '2024-05-08T10:02:36.000Z'
-  }
-];
-
 export default function Staff() {
   const [formView, setFormView] = useState(false);
   const [mappedData, setMappedData] = useState([]);
+  const [initialData, setInitialData] = useState([]);
+  const [formType, setFormType] = useState('');
+  const [selected, setSelected] = useState(null); // To store selected aircraft for editing
+
   const [formResponse, setFormResponse] = useState({
     visible: false,
     message: '',
@@ -34,8 +24,10 @@ export default function Staff() {
   const headCells = ['ID', 'Full Name', 'Email', 'Role', 'Status'];
 
   const handleFetchUsers = () => {
-    api.user.get().then((user) => {
-      const data = user.data.map((item) => {
+    api.user.get().then((response) => {
+      const data = response.data;
+      setInitialData(data);
+      const _data = data.map((item) => {
         return {
           id: item.id,
           full_name: item.full_name,
@@ -44,7 +36,7 @@ export default function Staff() {
           status: item.status
         };
       });
-      setMappedData(data);
+      setMappedData(_data);
     });
   };
 
@@ -75,9 +67,72 @@ export default function Staff() {
       });
   };
 
+  const handleEditUser = (data) => {
+    api.user
+      .put(data, selected.id)
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'User Updated Successfully',
+            severity: 'success'
+          });
+          handleFetchUsers();
+          setFormView(false);
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
+
+  const handleDeleteRecord = (value) => {
+    api.user
+      .delete(value.id)
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'User Deleted Successfully',
+            severity: 'success'
+          });
+          handleFetchUsers();
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
+
+  const handleOnActionClick = (value, action) => {
+    if (action === 'DELETE') {
+      handleDeleteRecord(value);
+    } else {
+      setFormType(action);
+      const dataObject = initialData.filter((ac) => ac.id === value.id);
+      setSelected(dataObject[0]);
+      setFormView(true);
+    }
+  };
+
   return (
     <Grid container>
-      <PageTitle title="Manage Staff" hasButton={!formView} onPressButton={() => setFormView(true)} />
+      <PageTitle
+        title="Manage Staff"
+        hasButton={!formView}
+        onPressButton={() => {
+          setFormView(true);
+          setFormType('NEW');
+        }}
+      />
 
       {formResponse.visible && (
         <Snackbar
@@ -94,14 +149,16 @@ export default function Staff() {
               label: 'Full Name',
               name: 'full_name',
               type: 'text',
-              required: true
+              required: true,
+              initialValue: selected?.full_name || ''
             },
-            { label: 'Username', name: 'username', type: 'text', required: false },
+            { label: 'Username', name: 'username', type: 'text', required: false, initialValue: selected?.username || '' },
             {
               label: 'Email',
               name: 'email',
               type: 'text',
-              required: true
+              required: true,
+              initialValue: selected?.email || ''
             },
             {
               label: 'Role',
@@ -112,14 +169,24 @@ export default function Staff() {
                 { label: 'Admin', value: 'admin' },
                 { label: 'Technician', value: 'technician' },
                 { label: 'Staff', value: 'staff' }
-              ]
+              ],
+              initialValue: selected?.role || ''
             }
           ]}
+          formType={formType}
+          initialValues={formType === 'NEW' ? {} : selected}
           onSave={(value) => handleSaveUser(value)}
+          onEdit={(value) => handleEditUser(value)}
           onCancel={() => setFormView(false)}
         />
       ) : (
-        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} canView={false} />
+        <OrdersTable
+          headCells={headCells}
+          data={mappedData}
+          onPressAction={(action, row) => handleOnActionClick(row, action)}
+          canView={true}
+          canEdit={true}
+        />
       )}
     </Grid>
   );

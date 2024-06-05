@@ -3,37 +3,19 @@ import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import PageTitle from 'components/@extended/PageTitle';
 import OrdersTable from '../dashboard/OrdersTable';
-import { fDateTime } from 'utils/format-time';
+import { fDateTime, formatTimestamp } from 'utils/format-time';
 import Form from 'components/form';
 import { useEffect, useState } from 'react';
 import api from 'api';
 import Snackbar from 'components/Snackbar';
 
-const data = [
-  {
-    id: 1,
-    activity_type: 'maintenance',
-    activity_description: 'Routine maintenance check',
-    aircraft_id: 1,
-    technician_id: 'technician1',
-    start_datetime: '2024-05-10T06:00:00.000Z',
-    end_datetime: '2024-05-10T10:00:00.000Z',
-    parts_replaced: ['part1', 'part2'],
-    issues_resolved: 'No issues found',
-    status: 'completed',
-    created_at: '2024-05-10T18:36:52.000Z',
-    updated_at: '2024-05-10T18:43:49.000Z',
-    aircraft_manufacturer: 'Boeing',
-    aircraft_model: '737',
-    registration_number: 'ABC122',
-    technician_name: 'james jr. cameron',
-    technician_email: 'jamescameron@aero.pro'
-  }
-];
-
 export default function MaintenanceSchedule() {
   const [formView, setFormView] = useState(false);
   const [mappedData, setMappedData] = useState([]);
+  const [initialData, setInitialData] = useState([]);
+  const [formType, setFormType] = useState('');
+  const [selected, setSelected] = useState(null);
+
   const [formResponse, setFormResponse] = useState({
     visible: false,
     message: '',
@@ -45,8 +27,10 @@ export default function MaintenanceSchedule() {
   const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
 
   const handleFetchActivities = () => {
-    api.maintenance.get().then((user) => {
-      const data = user.data.map((item) => {
+    api.maintenance.get().then((response) => {
+      const data = response.data;
+      setInitialData(data);
+      const _data = data.map((item) => {
         return {
           id: item.id,
           activity_type: item.activity_type.toUpperCase(),
@@ -57,7 +41,7 @@ export default function MaintenanceSchedule() {
           status: item.status
         };
       });
-      setMappedData(data);
+      setMappedData(_data);
     });
   };
 
@@ -111,9 +95,76 @@ export default function MaintenanceSchedule() {
       });
   };
 
+  const handleEditActivity = (data) => {
+    api.maintenance
+      .put({ ...data, parts_replaced: '', issues_resolved: '', status: 'scheduled' }, selected.id)
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'Activity Updated Successfully',
+            severity: 'success'
+          });
+          handleFetchActivities();
+          setFormView(false);
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
+
+  const handleDeleteRecord = (value) => {
+    api.maintenance
+      .delete(value.id)
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'Activity Deleted Successfully',
+            severity: 'success'
+          });
+          handleFetchActivities();
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
+
+  const handleOnActionClick = (value, action) => {
+    if (action === 'DELETE') {
+      handleDeleteRecord(value);
+    } else {
+      setFormType(action);
+      const dataObject = initialData.filter((ac) => ac.id === value.id);
+      setSelected({
+        ...dataObject[0],
+        start_datetime: formatTimestamp(dataObject[0]?.start_datetime),
+        end_datetime: formatTimestamp(dataObject[0]?.end_datetime)
+      });
+      setFormView(true);
+    }
+  };
+
   return (
     <Grid container>
-      <PageTitle title="Maintenance Schedules" hasButton={!formView} onPressButton={() => setFormView(true)} />
+      <PageTitle
+        title="Maintenance Schedules"
+        hasButton={!formView}
+        onPressButton={() => {
+          setFormView(true);
+          setFormType('NEW');
+        }}
+      />
 
       {formResponse.visible && (
         <Snackbar
@@ -134,7 +185,8 @@ export default function MaintenanceSchedule() {
               options: [
                 { label: 'Maintenance', value: 'maintenance' },
                 { label: 'Repair', value: 'repair' }
-              ]
+              ],
+              initialValue: selected?.activity_type || ''
             },
             { label: 'Description', name: 'activity_description', type: 'text', required: true },
             {
@@ -142,26 +194,30 @@ export default function MaintenanceSchedule() {
               name: 'aircraft_id',
               type: 'select',
               required: true,
-              options: aircrafts
+              options: aircrafts,
+              initialValue: selected?.activity_id || ''
             },
             {
               label: 'Technician',
               name: 'technician_id',
               type: 'select',
               required: true,
-              options: technicians
+              options: technicians,
+              initialValue: selected?.technician_id || ''
             },
             {
               label: 'Start Date Time',
               name: 'start_datetime',
               type: 'datetime-local',
-              required: true
+              required: true,
+              initialValue: formatTimestamp(selected?.start_datetime) || ''
             },
             {
               label: 'End Date Time',
               name: 'end_datetime',
               type: 'datetime-local',
-              required: true
+              required: true,
+              initialValue: formatTimestamp(selected?.end_datetime) || ''
             },
             {
               label: 'Priority Level',
@@ -173,14 +229,18 @@ export default function MaintenanceSchedule() {
                 { label: 'Medium', value: 2 },
                 { label: 'Low', value: 3 },
                 { label: 'No Priority', value: 4 }
-              ]
+              ],
+              initialValue: selected?.priority || ''
             }
           ]}
+          formType={formType}
+          initialValues={formType === 'NEW' ? {} : selected}
           onSave={(value) => handleSaveActivity(value)}
+          onEdit={(value) => handleEditActivity(value)}
           onCancel={() => setFormView(false)}
         />
       ) : (
-        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
+        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(action, row) => handleOnActionClick(row, action)} />
       )}
     </Grid>
   );

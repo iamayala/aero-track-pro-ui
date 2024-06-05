@@ -8,27 +8,12 @@ import Form from 'components/form';
 import api from 'api';
 import Snackbar from 'components/Snackbar';
 
-const data = [
-  {
-    id: 1,
-    registration_number: 'ABC122',
-    manufacturer: 'Boeing',
-    model: '737',
-    year_of_manufacture: 2010,
-    capacity: 150,
-    fuel_capacity: '20000.00',
-    max_speed: '500.00',
-    max_range: '3000.00',
-    current_location: 'New York',
-    status: 1,
-    created_at: '2024-05-10T18:01:31.000Z',
-    updated_at: '2024-05-10T18:40:12.000Z'
-  }
-];
-
 export default function FleetAnalytics() {
   const [formView, setFormView] = useState(false);
   const [mappedData, setMappedData] = useState([]);
+  const [initialData, setInitialData] = useState([]);
+  const [formType, setFormType] = useState('');
+  const [selected, setSelected] = useState(null); // To store selected aircraft for editing
   const [formResponse, setFormResponse] = useState({
     visible: false,
     message: '',
@@ -39,17 +24,18 @@ export default function FleetAnalytics() {
 
   const handleFetchAircrafts = () => {
     api.aircraft.get().then((response) => {
-      const data = response.data.map((item) => {
+      const data = response.data;
+      setInitialData(data);
+      const _data = data.map((item) => {
         return {
           id: item.id,
           registration_number: item.registration_number,
           name: item.manufacturer + ' ' + item.model,
           year_of_manufacture: item.year_of_manufacture,
           capacity: item.capacity
-          // current_location: item.current_location
         };
       });
-      setMappedData(data);
+      setMappedData(_data);
     });
   };
 
@@ -80,9 +66,72 @@ export default function FleetAnalytics() {
       });
   };
 
+  const handleEditAircraft = (data) => {
+    api.aircraft
+      .put({ ...data, current_location: null, status: 1 }, selected.id)
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'Aircrafts Updated Successfully',
+            severity: 'success'
+          });
+          handleFetchAircrafts();
+          setFormView(false);
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
+
+  const handleDeleteRecord = (value) => {
+    api.aircraft
+      .delete(value.id)
+      .then((response) => {
+        if (response.status === 200) {
+          setFormResponse({
+            visible: true,
+            message: 'Aircraft Deleted Successfully',
+            severity: 'success'
+          });
+          handleFetchAircrafts();
+        }
+      })
+      .catch((error) => {
+        setFormResponse({
+          visible: true,
+          message: error.message,
+          severity: 'error'
+        });
+      });
+  };
+
+  const handleOnActionClick = (value, action) => {
+    if (action === 'DELETE') {
+      handleDeleteRecord(value);
+    } else {
+      setFormType(action);
+      const dataObject = initialData.filter((ac) => ac.id === value.id);
+      setSelected(dataObject[0]);
+      setFormView(true);
+    }
+  };
+
   return (
     <Grid container>
-      <PageTitle title="Fleet Analytics" hasButton={!formView} onPressButton={() => setFormView(true)} />
+      <PageTitle
+        title="Fleet Analytics"
+        hasButton={!formView}
+        onPressButton={() => {
+          setFormView(true);
+          setFormType('NEW');
+        }}
+      />
       {formResponse.visible && (
         <Snackbar
           message={formResponse.message}
@@ -98,26 +147,53 @@ export default function FleetAnalytics() {
               label: 'Registration Number',
               name: 'registration_number',
               type: 'text',
-              required: true
+              required: true,
+              initialValue: selected?.registration_number || ''
             },
-            { label: 'Manufacturer', name: 'manufacturer', type: 'text', required: true },
-            { label: 'Model', name: 'model', type: 'text', required: true },
-            { label: 'Year Of Manufacture', name: 'year_of_manufacture', type: 'text', required: true },
-            { label: 'capacity', name: 'capacity', type: 'number', required: true },
-            { label: 'Fuel Capacity (in Litres)', name: 'fuel_capacity', type: 'number', required: true },
-            { label: 'Max Speed (in kph)', name: 'max_speed', type: 'number', required: true },
-            { label: 'Max Range', name: 'max_range', type: 'number', required: true }
+            {
+              label: 'Manufacturer',
+              name: 'manufacturer',
+              type: 'text',
+              required: true,
+              initialValue: selected?.manufacturer || ''
+            },
+            { label: 'Model', name: 'model', type: 'text', required: true, initialValue: selected?.model || '' },
+            {
+              label: 'Year Of Manufacture',
+              name: 'year_of_manufacture',
+              type: 'text',
+              required: true,
+              initialValue: selected?.year_of_manufacture || ''
+            },
+            { label: 'capacity', name: 'capacity', type: 'number', required: true, initialValue: selected?.capacity || '' },
+            {
+              label: 'Fuel Capacity (in Litres)',
+              name: 'fuel_capacity',
+              type: 'number',
+              required: true,
+              initialValue: selected?.fuel_capacity || ''
+            },
+            {
+              label: 'Max Speed (in kph)',
+              name: 'max_speed',
+              type: 'number',
+              required: true,
+              initialValue: selected?.max_speed || ''
+            },
+            { label: 'Max Range', name: 'max_range', type: 'number', required: true, initialValue: selected?.max_range || '' }
           ]}
+          formType={formType}
+          initialValues={formType === 'NEW' ? {} : selected}
           onSave={(value) => handleSaveAircraft(value)}
+          onEdit={(value) => handleEditAircraft(value)}
           onCancel={() => setFormView(false)}
         />
       ) : (
         <OrdersTable
           headCells={headCells}
           data={mappedData}
-          onPressAction={(value, row) => console.log(value, row)}
+          onPressAction={(action, row) => handleOnActionClick(row, action)}
           canDelete={false}
-          canEdit={false}
         />
       )}
     </Grid>

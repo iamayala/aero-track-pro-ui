@@ -7,6 +7,7 @@ import { fDateTime } from 'utils/format-time';
 import FormSelect from 'components/FormSelect';
 import api from 'api';
 import { useEffect, useState } from 'react';
+import { random } from 'lodash';
 
 const data = [
   {
@@ -33,19 +34,30 @@ const data = [
 export default function AircraftMonitoring() {
   const [aircrafts, setAircrafts] = useState([]);
   const [activeAircraft, setActiveAircraft] = useState(null);
-  const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
+  const [initialData, setInitialData] = useState([]);
+  const [mappedData, setMappedData] = useState([]);
 
-  const mappedData = data.map((item) => {
-    return {
-      id: item.id,
-      activity_type: item.activity_type.toUpperCase(),
-      aircraft: item.aircraft_manufacturer + ' ' + item.aircraft_model,
-      start_datetime: fDateTime(item.start_datetime),
-      end_datetime: fDateTime(item.end_datetime),
-      technician_name: item.technician_name,
-      status: item.status
-    };
-  });
+  const headCells = ['Flight No.', 'Pilot', 'Departure', 'Arrival', 'Range', 'Speed', 'Fuel', 'Health'];
+
+  const handleFetchFlights = () => {
+    api.flight.get().then((response) => {
+      const data = response.data;
+      setInitialData(data);
+      const _data = data.map((item) => {
+        return {
+          id: item.flight_number,
+          pilot: 'TUENY',
+          departure: item.departure_airport + ' - ' + fDateTime(item.departure_datetime),
+          arrival: item.arrival_airport + ' - ' + fDateTime(item.arrival_datetime),
+          range: random(item.max_range * 0.5, item.max_range).toFixed(1),
+          speed: random(item.max_speed * 0.5, item.max_speed).toFixed(1),
+          fuel: random(item.fuel_capacity * 0.2, item.fuel_capacity * 0.9).toFixed(1),
+          status: item.status
+        };
+      });
+      setMappedData(_data);
+    });
+  };
 
   useEffect(() => {
     api.aircraft.get().then((response) => {
@@ -55,6 +67,7 @@ export default function AircraftMonitoring() {
           value: item.id
         };
       });
+      handleFetchFlights();
       setAircrafts(data);
       setActiveAircraft(data.id);
     });
@@ -64,9 +77,7 @@ export default function AircraftMonitoring() {
     <Grid container>
       <PageTitle title="Aircraft Monitoring" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
       <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
-      {aircrafts.length > 0 && activeAircraft && (
-        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
-      )}
+      {aircrafts.length > 0 && activeAircraft && <OrdersTable headCells={headCells} data={mappedData} hasAction={false} />}
     </Grid>
   );
 }
