@@ -12,7 +12,7 @@ export default function AircraftHistory() {
   const [activeAircraft, setActiveAircraft] = useState(null);
   const [mappedData, setMappedData] = useState([]);
 
-  const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
+  const headCells = ['ID', 'A.ID.', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
 
   const handleFetchActivities = () => {
     api.maintenance.get().then((response) => {
@@ -20,6 +20,7 @@ export default function AircraftHistory() {
       const _data = data.map((item) => {
         return {
           id: item.id,
+          aircraft_id: item.aircraft_id,
           activity_type: item.activity_type.toUpperCase(),
           aircraft: item.aircraft_manufacturer + ' ' + item.aircraft_model,
           start_datetime: fDateTime(item.start_datetime),
@@ -51,7 +52,7 @@ export default function AircraftHistory() {
       <PageTitle title="History and Logbook" hasButton={false} buttonLabel="Download CSV" onPressButton={() => {}} />
 
       <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
-      <OrdersTable headCells={headCells} data={mappedData.filter((item) => item.id === activeAircraft)} hasAction={false} />
+      <OrdersTable headCells={headCells} data={mappedData.filter((item) => item.aircraft_id === activeAircraft)} hasAction={false} />
     </Grid>
   );
 }

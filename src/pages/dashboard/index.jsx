@@ -28,6 +28,8 @@ import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
+import api from 'api';
+import { useEffect, useState } from 'react';
 
 // avatar style
 const avatarSX = {
@@ -49,6 +51,40 @@ const actionSX = {
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
+  const [averagePriority, setAveragePriority] = useState(null);
+  const [responseTime, setResponseTime] = useState(null);
+  const [noOfFlights, setNoOfFlights] = useState(0);
+  const [metrics, setMetrics] = useState(null);
+
+  useEffect(() => {
+    api.dashboard.getAveragePriority().then((response) => {
+      if (response.status === 200) {
+        setAveragePriority(response.data);
+      }
+    });
+
+    api.dashboard.getResponseTimePercentage().then((response) => {
+      if (response.status === 200) {
+        setResponseTime(response.data);
+      }
+    });
+
+    api.dashboard.getFlightsOfCurrentWeek().then((response) => {
+      if (response.status === 200) {
+        let _total = 0;
+        response.data.map((data) => (_total += data));
+        setNoOfFlights(_total);
+      }
+    });
+
+    api.dashboard.getMetrics().then((response) => {
+      console.log(response.data);
+      if (response.status === 200) {
+        setMetrics(response.data);
+      }
+    });
+  }, []);
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -56,16 +92,16 @@ export default function DashboardDefault() {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Maintenance Activity Scheduled" count="42" />
+        <AnalyticEcommerce title="Maintenance Activity Scheduled" count={metrics?.ongoingAndPendingMaintenance} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Current Flights" count="2" isDanger />
+        <AnalyticEcommerce title="Current Flights" count={metrics?.ongoingFlights} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Aircrafts in Danger" count="0" />
+        <AnalyticEcommerce title="Aircrafts in Danger" count={metrics?.aircraftInDanger} isDanger={metrics?.aircraftInDanger > 0} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Automated Orders" count="2" isDanger />
+        <AnalyticEcommerce title="Automated Orders" count={metrics?.ordersPlaced} isDanger={false} />
       </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
@@ -87,22 +123,13 @@ export default function DashboardDefault() {
               <Typography variant="h6" color="text.secondary">
                 This Week Statistics
               </Typography>
-              <Typography variant="h3">46 Flights</Typography>
+              <Typography variant="h3">{noOfFlights} Flight/s</Typography>
             </Stack>
           </Box>
           <MonthlyBarChart />
         </MainCard>
       </Grid>
 
-      {/* row 3 */}
-      {/* <Grid  item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Recent Orders</Typography>
-          </Grid>
-          <Grid item />
-        </Grid>
-      </Grid> */}
       <Grid item xs={12} md={7} lg={12}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
@@ -113,16 +140,14 @@ export default function DashboardDefault() {
         <MainCard sx={{ mt: 2 }} content={false}>
           <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
             <ListItemButton divider>
-              <ListItemText primary="Response Time" />
-              <Typography variant="h5">+45.14%</Typography>
-            </ListItemButton>
-            <ListItemButton divider>
-              <ListItemText primary="Company Expenses Ratio" />
-              <Typography variant="h5">0.58%</Typography>
+              <ListItemText primary="Average Response Time" />
+              <Typography variant="h5">{responseTime?.responseTimePercentage ?? '-'}%</Typography>
             </ListItemButton>
             <ListItemButton>
-              <ListItemText primary="Aircraft Risk Cases" />
-              <Typography variant="h5">Low</Typography>
+              <ListItemText primary="Aircraft Risk Metric" />
+              <Typography variant="h5" textTransform={'capitalize'}>
+                {averagePriority?.priorityMetric ?? '-'}
+              </Typography>
             </ListItemButton>
           </List>
           <ReportAreaChart />

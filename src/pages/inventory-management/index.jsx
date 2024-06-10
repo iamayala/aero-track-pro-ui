@@ -146,7 +146,7 @@ export default function Inventory() {
         <Form
           fields={[
             {
-              label: 'Part Numer',
+              label: 'Part Number',
               name: 'part_number',
               type: 'number',
               required: true,

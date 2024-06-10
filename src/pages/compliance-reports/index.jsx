@@ -53,7 +53,7 @@ export default function ComplianceReports() {
   return (
     <Grid container>
       <PageTitle title="Compliance Reports" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
-      <DownloadCSV data={_data} fileName="employees" />
+      {/* <DownloadCSV data={_data} fileName="employees" /> */}
       <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
     </Grid>
   );

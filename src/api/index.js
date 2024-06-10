@@ -64,6 +64,15 @@ const api = {
     getOne: (id) => axios.get(`${API_BASE_URL}/part/${id}`),
     put: (payload, id) => axios.put(`${API_BASE_URL}/part/${id}`, payload),
     delete: (id) => axios.delete(`${API_BASE_URL}/part/${id}`)
+  },
+
+  dashboard: {
+    getFlightsOfCurrentWeek: () => axios.get(`${API_BASE_URL}/dashboard/flights/current-week`),
+    getMaintenanceActivities: () => axios.get(`${API_BASE_URL}/dashboard/maintenance-activities`),
+    getResponseTimePercentage: () => axios.get(`${API_BASE_URL}/dashboard/response-time-percentage`),
+    getAveragePriority: () => axios.get(`${API_BASE_URL}/dashboard/average-risk`),
+    getAveragePriorityPerMonth: () => axios.get(`${API_BASE_URL}/dashboard/average-priority-per-month`),
+    getMetrics: () => axios.get(`${API_BASE_URL}/dashboard/metrics`)
   }
 };
 

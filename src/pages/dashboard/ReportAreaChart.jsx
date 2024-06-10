@@ -5,6 +5,7 @@ import { useTheme } from '@mui/material/styles';
 
 // third-party
 import ReactApexChart from 'react-apexcharts';
+import api from 'api';
 
 // chart options
 const areaChartOptions = {
@@ -28,14 +29,18 @@ const areaChartOptions = {
   xaxis: {
     type: 'datetime',
     categories: [
-      '2018-05-19T00:00:00.000Z',
-      '2018-06-19T00:00:00.000Z',
-      '2018-07-19T01:30:00.000Z',
-      '2018-08-19T02:30:00.000Z',
-      '2018-09-19T03:30:00.000Z',
-      '2018-10-19T04:30:00.000Z',
-      '2018-11-19T05:30:00.000Z',
-      '2018-12-19T06:30:00.000Z'
+      '2024-01-15T00:00:00.000Z',
+      '2024-02-15T00:00:00.000Z',
+      '2024-03-15T00:00:00.000Z',
+      '2024-04-15T00:00:00.000Z',
+      '2024-05-15T00:00:00.000Z',
+      '2024-06-15T00:00:00.000Z',
+      '2024-07-15T01:30:00.000Z',
+      '2024-08-15T02:30:00.000Z',
+      '2024-09-15T03:30:00.000Z',
+      '2024-10-15T04:30:00.000Z',
+      '2024-11-15T05:30:00.000Z',
+      '2024-12-15T06:30:00.000Z'
     ],
     labels: {
       format: 'MMM'
@@ -67,6 +72,27 @@ export default function ReportAreaChart() {
 
   const [options, setOptions] = useState(areaChartOptions);
 
+  const [series, setSeries] = useState([
+    {
+      name: 'Average Risk Detected',
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  ]);
+
+  useEffect(() => {
+    api.dashboard.getAveragePriorityPerMonth().then((response) => {
+      if (response.status === 200) {
+        console.log(response.data.monthlyPriorities);
+        setSeries([
+          {
+            name: 'Average Risk Detected',
+            data: response.data?.monthlyPriorities ?? []
+          }
+        ]);
+      }
+    });
+  }, []);
+
   useEffect(() => {
     setOptions((prevState) => ({
       ...prevState,
@@ -88,13 +114,6 @@ export default function ReportAreaChart() {
       }
     }));
   }, [primary, secondary, line, theme]);
-
-  const [series] = useState([
-    {
-      name: 'Series 1',
-      data: [58, 115, 28, 83, 63, 75, 35, 55]
-    }
-  ]);
 
   return <ReactApexChart options={options} series={series} type="line" height={340} />;
 }

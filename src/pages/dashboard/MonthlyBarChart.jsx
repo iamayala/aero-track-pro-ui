@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 
 // third-party
 import ReactApexChart from 'react-apexcharts';
+import api from 'api';
 
 // chart options
 const barChartOptions = {
@@ -50,13 +51,25 @@ export default function MonthlyBarChart() {
   const { primary, secondary } = theme.palette.text;
   const info = theme.palette.info.light;
 
-  const [series] = useState([
+  const [series, setSeries] = useState([
     {
-      data: [80, 95, 70, 42, 65, 55, 78]
+      data: [0, 0, 0, 0, 0, 0, 0]
     }
   ]);
 
   const [options, setOptions] = useState(barChartOptions);
+
+  useEffect(() => {
+    api.dashboard.getFlightsOfCurrentWeek().then((response) => {
+      if (response.status === 200) {
+        setSeries([
+          {
+            data: response.data
+          }
+        ]);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     setOptions((prevState) => ({
