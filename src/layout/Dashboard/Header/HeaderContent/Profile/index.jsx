@@ -20,8 +20,6 @@ import { useAuth } from 'hooks/use-auth';
 export default function Profile() {
   const auth = useAuth();
 
-  console.log(auth.cookieman);
-
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>

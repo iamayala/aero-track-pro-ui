@@ -4,6 +4,11 @@ import Grid from '@mui/material/Grid';
 import PageTitle from 'components/@extended/PageTitle';
 import OrdersTable from '../dashboard/OrdersTable';
 import { fDateTime } from 'utils/format-time';
+import api from 'api';
+import { useEffect, useState } from 'react';
+import { useAuth } from 'hooks/use-auth';
+import { downloadPdfDocument } from 'utils/downloadfn';
+import { reportHtmlForm } from 'utils/report';
 
 const data = [
   {
@@ -28,24 +33,53 @@ const data = [
 ];
 
 export default function AutomatedReports() {
-  const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
+  const [mappedData, setMappedData] = useState([]);
 
-  const mappedData = data.map((item) => {
-    return {
-      id: item.id,
-      activity_type: item.activity_type.toUpperCase(),
-      aircraft: item.aircraft_manufacturer + ' ' + item.aircraft_model,
-      start_datetime: fDateTime(item.start_datetime),
-      end_datetime: fDateTime(item.end_datetime),
-      technician_name: item.technician_name,
-      status: item.status
-    };
-  });
+  const headCells = ['ID', 'Type', 'Description', 'Aircraft', 'Issue Resolved', 'Completed At', 'Assigned To'];
+
+  useEffect(() => {
+    handleFetchActivities();
+  }, []);
+
+  const handleFetchActivities = () => {
+    api.maintenance.get().then((response) => {
+      const data = response.data;
+      const _data = data
+        .filter((item) => item.status === 'completed')
+        .map((item) => {
+          return {
+            id: item.id,
+            activity_type: item.activity_type.toUpperCase(),
+            activity_description: item.activity_description,
+            aircraft: item.aircraft_manufacturer + ' ' + item.aircraft_model,
+            issues_resolved: item.issues_resolved ? item.issues_resolved : 'n/a',
+            updated_at: fDateTime(item.updated_at),
+            technician_name: item.technician_name
+          };
+        });
+      setMappedData(_data);
+    });
+  };
+
+  const auth = useAuth();
+
+  const docInfo = {
+    title: 'Maintenance Report',
+    generatedBy: auth.cookieman?.full_name
+  };
+
+  const onDownloadCSV = () => {
+    downloadPdfDocument(reportHtmlForm(mappedData, headCells, docInfo), docInfo.title + ` ${new Date().toISOString()}`);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
 
   return (
     <Grid container>
-      <PageTitle title="Maintenance Reports" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
-      <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
+      <PageTitle title="Maintenance Reports" hasButton={true} buttonLabel="Download Report" onPressButton={() => onDownloadCSV()} />
+      <OrdersTable headCells={headCells} data={mappedData} onPressAction={() => {}} hasAction={false} />
     </Grid>
   );
 }

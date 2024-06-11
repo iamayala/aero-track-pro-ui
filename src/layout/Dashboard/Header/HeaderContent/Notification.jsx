@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -22,6 +22,8 @@ import Transitions from 'components/@extended/Transitions';
 
 // assets
 import BellOutlined from '@ant-design/icons/BellOutlined';
+import api from 'api';
+import { fDateTime } from 'utils/format-time';
 
 // sx styles
 const avatarSX = {
@@ -47,8 +49,10 @@ export default function Notification() {
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
 
   const anchorRef = useRef(null);
-  const [read, setRead] = useState(2);
   const [open, setOpen] = useState(false);
+
+  const [notifications, setNotifications] = useState([]);
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -62,6 +66,17 @@ export default function Notification() {
 
   const iconBackColorOpen = 'grey.100';
 
+  useEffect(() => {
+    const fetchNotifications = () => {
+      api.notifications.getNotifications().then((response) => {
+        if (response.status === 200) setNotifications(response.data);
+      });
+    };
+    fetchNotifications();
+    const intervalId = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <IconButton
@@ -74,7 +89,7 @@ export default function Notification() {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Badge badgeContent={read} color="primary">
+        <Badge badgeContent={notifications.length} color="primary">
           <BellOutlined />
         </Badge>
       </IconButton>
@@ -111,7 +126,7 @@ export default function Notification() {
                       }
                     }}
                   >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((item, i) => {
+                    {notifications.map((item, i) => {
                       return (
                         <>
                           <ListItemButton key={i}>
@@ -119,17 +134,12 @@ export default function Notification() {
                               primary={
                                 <Typography variant="h6">
                                   <Typography component="span" variant="subtitle1">
-                                    You have a pending activity
+                                    {item?.message}
                                   </Typography>
                                 </Typography>
                               }
-                              secondary="Maintenance Reminder"
+                              secondary={fDateTime(item?.created_at)}
                             />
-                            <ListItemSecondaryAction>
-                              <Typography variant="caption" noWrap>
-                                9:10 PM
-                              </Typography>
-                            </ListItemSecondaryAction>
                           </ListItemButton>
                           <Divider />
                         </>

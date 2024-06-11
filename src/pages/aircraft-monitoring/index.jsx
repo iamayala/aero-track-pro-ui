@@ -7,6 +7,9 @@ import { fDateTime } from 'utils/format-time';
 import FormSelect from 'components/FormSelect';
 import api from 'api';
 import { useEffect, useState } from 'react';
+import { useAuth } from 'hooks/use-auth';
+import { downloadPdfDocument } from 'utils/downloadfn';
+import { reportHtmlForm } from 'utils/report';
 
 export default function AircraftMonitoring() {
   const [aircrafts, setAircrafts] = useState([]);
@@ -25,9 +28,9 @@ export default function AircraftMonitoring() {
           pilot: item.pilot_name,
           departure: item.departure_airport + ' - ' + fDateTime(item.departure_datetime),
           arrival: item.arrival_airport + ' - ' + fDateTime(item.arrival_datetime),
-          range: item.aircraft_max_range.toFixed(1),
-          speed: item.aircraft_max_speed.toFixed(1),
-          fuel: item.aircraft_fuel_capacity.toFixed(1),
+          range: parseFloat(item.aircraft_max_range).toFixed(1),
+          speed: parseFloat(item.aircraft_max_speed).toFixed(1),
+          fuel: parseFloat(item.aircraft_fuel_capacity).toFixed(1),
           status: item.flight_status
         };
       });
@@ -49,9 +52,31 @@ export default function AircraftMonitoring() {
     });
   }, []);
 
+  const auth = useAuth();
+
+  const docInfo = {
+    title: `${aircrafts.filter((aircraft) => aircraft.value === activeAircraft)[0]?.label} Monitoring Report`,
+    generatedBy: auth.cookieman?.full_name
+  };
+
+  const onDownloadCSV = () => {
+    downloadPdfDocument(
+      reportHtmlForm(
+        mappedData.filter((item) => item.aircraft_id === activeAircraft),
+        headCells,
+        docInfo
+      ),
+      docInfo.title + ` ${new Date().toISOString()}`
+    );
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
+
   return (
     <Grid container>
-      <PageTitle title="Aircraft Monitoring" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
+      <PageTitle title="Aircraft Monitoring" hasButton={true} buttonLabel="Download Report" onPressButton={() => onDownloadCSV()} />
       <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
       {aircrafts.length > 0 && activeAircraft && (
         <OrdersTable headCells={headCells} data={mappedData.filter((item) => item.aircraft_id === activeAircraft)} hasAction={false} />

@@ -15,8 +15,8 @@ import IconButton from '@mui/material/IconButton';
 import Dot from 'components/@extended/Dot';
 import MainCard from 'components/MainCard';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { useCallback, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
@@ -45,7 +45,7 @@ function OrderStatus({ status }) {
       break;
     case 1:
       color = 'success';
-      title = 'Approved';
+      title = 'Active';
       break;
     case 2:
       color = 'error';
@@ -74,7 +74,8 @@ export default function OrderTable({
   canEdit = true,
   canDelete = true,
   onPressAction,
-  handleRefresh
+  handleRefresh,
+  canSearch = false
 }) {
   const handlePressAction = useCallback(
     (action, row) => {
@@ -85,6 +86,9 @@ export default function OrderTable({
 
   const [open, setOpen] = useState(false);
   const [proneToDelete, setProneToDelete] = useState(null);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {}, [query]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -102,6 +106,7 @@ export default function OrderTable({
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        notifi
       >
         <DialogTitle id="alert-dialog-title">You are to delete a record</DialogTitle>
         <DialogContent>
@@ -145,50 +150,53 @@ export default function OrderTable({
               </Button>
             </Stack>
           ) : (
-            <Table aria-labelledby="tableTitle">
-              <OrderTableHead headCells={headCells} hasAction={hasAction} />
-              <TableBody>
-                {data.map((row, index) => {
-                  return (
-                    <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
-                      {Object.entries(row).map(([key, value]) => (
-                        <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
-                      ))}
-                      {hasAction && (
-                        <TableCell>
-                          <Stack direction={'row'} gap={'10px'}>
-                            {canView && (
-                              <IconButton color="success" size="small" onClick={() => handlePressAction('VIEW', row)}>
-                                <EyeOutlined style={{ fontSize: '1.15rem' }} />
-                              </IconButton>
-                            )}
+            <>
+              {canSearch && <TextField variant="outlined" fullWidth value={query} onChange={(e) => setQuery(e.target.value)} />}
+              <Table aria-labelledby="tableTitle">
+                <OrderTableHead headCells={headCells} hasAction={hasAction} />
+                <TableBody>
+                  {data.map((row, index) => {
+                    return (
+                      <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
+                        {Object.entries(row).map(([key, value]) => (
+                          <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
+                        ))}
+                        {hasAction && (
+                          <TableCell>
+                            <Stack direction={'row'} gap={'10px'}>
+                              {canView && (
+                                <IconButton color="success" size="small" onClick={() => handlePressAction('VIEW', row)}>
+                                  <EyeOutlined style={{ fontSize: '1.15rem' }} />
+                                </IconButton>
+                              )}
 
-                            {canEdit && (
-                              <IconButton color="warning" size="small" onClick={() => handlePressAction('EDIT', row)}>
-                                <EditOutlined style={{ fontSize: '1.15rem' }} />
-                              </IconButton>
-                            )}
+                              {canEdit && (
+                                <IconButton color="warning" size="small" onClick={() => handlePressAction('EDIT', row)}>
+                                  <EditOutlined style={{ fontSize: '1.15rem' }} />
+                                </IconButton>
+                              )}
 
-                            {canDelete && (
-                              <IconButton
-                                color="error"
-                                size="small"
-                                onClick={() => {
-                                  setProneToDelete(row);
-                                  handleClickOpen();
-                                }}
-                              >
-                                <DeleteOutlined style={{ fontSize: '1.15rem' }} />
-                              </IconButton>
-                            )}
-                          </Stack>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                              {canDelete && (
+                                <IconButton
+                                  color="error"
+                                  size="small"
+                                  onClick={() => {
+                                    setProneToDelete(row);
+                                    handleClickOpen();
+                                  }}
+                                >
+                                  <DeleteOutlined style={{ fontSize: '1.15rem' }} />
+                                </IconButton>
+                              )}
+                            </Stack>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </>
           )}
         </TableContainer>
       </Box>

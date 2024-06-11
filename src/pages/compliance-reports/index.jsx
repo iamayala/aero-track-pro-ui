@@ -4,57 +4,57 @@ import Grid from '@mui/material/Grid';
 import PageTitle from 'components/@extended/PageTitle';
 import OrdersTable from '../dashboard/OrdersTable';
 import { fDateTime } from 'utils/format-time';
-import DownloadCSV from 'utils/DownloadCSV';
-
-const data = [
-  {
-    id: 1,
-    activity_type: 'maintenance',
-    activity_description: 'Routine maintenance check',
-    aircraft_id: 1,
-    technician_id: 'technician1',
-    start_datetime: '2024-05-10T06:00:00.000Z',
-    end_datetime: '2024-05-10T10:00:00.000Z',
-    parts_replaced: ['part1', 'part2'],
-    issues_resolved: 'No issues found',
-    status: 'completed',
-    created_at: '2024-05-10T18:36:52.000Z',
-    updated_at: '2024-05-10T18:43:49.000Z',
-    aircraft_manufacturer: 'Boeing',
-    aircraft_model: '737',
-    registration_number: 'ABC122',
-    technician_name: 'james jr. cameron',
-    technician_email: 'jamescameron@aero.pro'
-  }
-];
+import { useEffect, useState } from 'react';
+import api from 'api';
+import { downloadPdfDocument } from 'utils/downloadfn';
+import { reportHtmlForm } from 'utils/report';
+import { useAuth } from 'hooks/use-auth';
 
 export default function ComplianceReports() {
-  const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
+  const [mappedData, setMappedData] = useState([]);
 
-  const mappedData = data.map((item) => {
-    return {
-      id: item.id,
-      activity_type: item.activity_type.toUpperCase(),
-      aircraft: item.aircraft_manufacturer + ' ' + item.aircraft_model,
-      start_datetime: fDateTime(item.start_datetime),
-      end_datetime: fDateTime(item.end_datetime),
-      technician_name: item.technician_name,
-      status: item.status
-    };
-  });
+  const headCells = ['Rerport ID', 'Aircraft Model', 'Description', 'Findings', 'Corrective Actions', 'Report Date'];
 
-  const _data = [
-    {
-      name: 'James',
-      role: 'Admin'
-    }
-  ];
+  const handleFetchComplianceReports = () => {
+    api.reports.getComplianceReports().then((response) => {
+      const data = response.data;
+      const _data = data.map((item) => {
+        return {
+          report_id: item.report_id,
+          aircraft: item.manufacturer + '-' + item.model,
+          description: item.description,
+          findings: item.findings,
+          corrective_actions: item.corrective_actions,
+          report_date: fDateTime(item.report_date)
+        };
+      });
+      setMappedData(_data);
+    });
+  };
+
+  useEffect(() => {
+    handleFetchComplianceReports();
+  }, []);
+
+  const auth = useAuth();
+
+  const docInfo = {
+    title: 'Compliance Report',
+    generatedBy: auth.cookieman?.full_name
+  };
+
+  const onDownloadCSV = () => {
+    downloadPdfDocument(reportHtmlForm(mappedData, headCells, docInfo), docInfo.title + ` ${new Date().toISOString()}`);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
 
   return (
     <Grid container>
-      <PageTitle title="Compliance Reports" hasButton={true} buttonLabel="Download CSV" onPressButton={() => {}} />
-      {/* <DownloadCSV data={_data} fileName="employees" /> */}
-      <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} />
+      <PageTitle title="Compliance Reports" hasButton={true} buttonLabel="Download Report" onPressButton={() => onDownloadCSV()} />
+      <OrdersTable headCells={headCells} data={mappedData} onPressAction={(value, row) => console.log(value, row)} hasAction={false} />
     </Grid>
   );
 }

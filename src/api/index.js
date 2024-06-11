@@ -73,6 +73,14 @@ const api = {
     getAveragePriority: () => axios.get(`${API_BASE_URL}/dashboard/average-risk`),
     getAveragePriorityPerMonth: () => axios.get(`${API_BASE_URL}/dashboard/average-priority-per-month`),
     getMetrics: () => axios.get(`${API_BASE_URL}/dashboard/metrics`)
+  },
+
+  reports: {
+    getComplianceReports: () => axios.get(`${API_BASE_URL}/reports/compliance-reports`)
+  },
+
+  notifications: {
+    getNotifications: () => axios.get(`${API_BASE_URL}/notifications`)
   }
 };
 
