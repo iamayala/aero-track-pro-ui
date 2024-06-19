@@ -13,7 +13,14 @@ import { useAuth } from 'hooks/use-auth';
 export default function ComplianceReports() {
   const [mappedData, setMappedData] = useState([]);
 
-  const headCells = ['Rerport ID', 'Aircraft Model', 'Description', 'Findings', 'Corrective Actions', 'Report Date'];
+  const headCells = [
+    { id: 'report_id', label: 'Report ID' },
+    { id: 'aircraft', label: 'Aircraft Model' },
+    { id: 'description', label: 'Description' },
+    { id: 'findings', label: 'Findings' },
+    { id: 'corrective_actions', label: 'Corrective Actions' },
+    { id: 'report_date', label: 'Report Date' }
+  ];
 
   const handleFetchComplianceReports = () => {
     api.reports.getComplianceReports().then((response) => {

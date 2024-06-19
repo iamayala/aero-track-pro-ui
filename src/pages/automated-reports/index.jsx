@@ -35,7 +35,15 @@ const data = [
 export default function AutomatedReports() {
   const [mappedData, setMappedData] = useState([]);
 
-  const headCells = ['ID', 'Type', 'Description', 'Aircraft', 'Issue Resolved', 'Completed At', 'Assigned To'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'activity_type', label: 'Type' },
+    { id: 'activity_description', label: 'Description' },
+    { id: 'aircraft', label: 'Aircraft' },
+    { id: 'issues_resolved', label: 'Issue Resolved' },
+    { id: 'updated_at', label: 'Completed At' },
+    { id: 'technician_name', label: 'Assigned To' }
+  ];
 
   useEffect(() => {
     handleFetchActivities();

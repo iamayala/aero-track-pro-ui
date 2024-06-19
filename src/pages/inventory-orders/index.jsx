@@ -15,7 +15,16 @@ export default function InventoryOrders() {
     severity: 'error'
   });
 
-  const headCells = ['ID', 'Part Number', 'Part Name', 'Manufacturer', 'Quantity', 'Unit Price', 'Total', 'Status'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'part_number', label: 'Part Number' },
+    { id: 'part_name', label: 'Part Name' },
+    { id: 'manufacturer', label: 'Manufacturer' },
+    { id: 'quantity', label: 'Quantity' },
+    { id: 'unit_price', label: 'Unit Price' },
+    { id: 'total', label: 'Total' },
+    { id: 'status', label: 'Status' }
+  ];
 
   const handleFetchOrders = () => {
     api.order.get().then((response) => {

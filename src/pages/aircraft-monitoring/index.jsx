@@ -16,7 +16,17 @@ export default function AircraftMonitoring() {
   const [activeAircraft, setActiveAircraft] = useState(null);
   const [mappedData, setMappedData] = useState([]);
 
-  const headCells = ['A.ID', 'F.No.', 'Pilot', 'Departure', 'Arrival', 'Range', 'Speed', 'Fuel', 'Health'];
+  const headCells = [
+    { id: 'aircraft_id', label: 'A.ID' },
+    { id: 'id', label: 'F.No.' },
+    { id: 'pilot', label: 'Pilot' },
+    { id: 'departure', label: 'Departure' },
+    { id: 'arrival', label: 'Arrival' },
+    { id: 'range', label: 'Range' },
+    { id: 'speed', label: 'Speed' },
+    { id: 'fuel', label: 'Fuel' },
+    { id: 'status', label: 'Health' }
+  ];
 
   const handleFetchFlights = () => {
     api.flight.get().then((response) => {

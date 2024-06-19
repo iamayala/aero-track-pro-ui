@@ -6,13 +6,23 @@ import { fDateTime } from 'utils/format-time';
 import FormSelect from 'components/FormSelect';
 import { useEffect, useState } from 'react';
 import api from 'api';
+import { headCellObjects } from 'utils/misc';
 
 export default function AircraftHistory() {
   const [aircrafts, setAircrafts] = useState([]);
   const [activeAircraft, setActiveAircraft] = useState(null);
   const [mappedData, setMappedData] = useState([]);
 
-  const headCells = ['ID', 'A.ID.', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'aircraft_id', label: 'A.ID' },
+    { id: 'activity_type', label: 'Description' },
+    { id: 'aircraft', label: 'Aircraft' },
+    { id: 'start_time', label: 'Start Time' },
+    { id: 'end_time', label: 'End Time' },
+    { id: 'technician_name', label: 'Assigned To' },
+    { id: 'status', label: 'Status' }
+  ];
 
   const handleFetchActivities = () => {
     api.maintenance.get().then((response) => {

@@ -21,7 +21,13 @@ export default function Staff() {
     severity: 'error'
   });
 
-  const headCells = ['ID', 'Full Name', 'Email', 'Role', 'Status'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'full_name', label: 'Full Name' },
+    { id: 'email', label: 'Email' },
+    { id: 'role', label: 'Role' },
+    { id: 'status', label: 'Status' }
+  ];
 
   const handleFetchUsers = () => {
     api.user.get().then((response) => {

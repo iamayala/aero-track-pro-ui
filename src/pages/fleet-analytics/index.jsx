@@ -20,7 +20,13 @@ export default function FleetAnalytics() {
     severity: 'error'
   });
 
-  const headCells = ['ID', 'Registration Number', 'Name', 'Year', 'Capacity'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'registration_number', label: 'Registration Number' },
+    { id: 'name', label: 'Name' },
+    { id: 'year_of_manufacture', label: 'Year' },
+    { id: 'capacity', label: 'Capacity' }
+  ];
 
   const handleFetchAircrafts = () => {
     api.aircraft.get().then((response) => {

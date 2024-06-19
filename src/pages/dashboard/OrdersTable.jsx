@@ -16,19 +16,31 @@ import Dot from 'components/@extended/Dot';
 import MainCard from 'components/MainCard';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TableSortLabel, TextField } from '@mui/material';
+import useSortableData from './Sorting';
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
-function OrderTableHead({ headCells, hasAction }) {
+function OrderTableHead({ headCells, hasAction, onRequestSort, order, orderBy }) {
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
   return (
     <TableHead>
       <TableRow>
-        {headCells.map((headCell, index) => (
-          <TableCell key={index}>{headCell}</TableCell>
+        {headCells.map((headCell) => (
+          <TableCell key={headCell.id} sortDirection={orderBy === headCell.id ? order : false}>
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {/* {orderBy === headCell.id ? <span>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span> : null} */}
+            </TableSortLabel>
+          </TableCell>
         ))}
-
-        {hasAction && <TableCell>ACTION</TableCell>}
+        {hasAction && <TableCell>Actions</TableCell>}
       </TableRow>
     </TableHead>
   );
@@ -98,6 +110,8 @@ export default function OrderTable({
     setOpen(false);
   };
 
+  const { order, orderBy, sortedData, handleRequestSort } = useSortableData(data);
+
   return (
     <MainCard content={true} style={{ width: '100%' }}>
       <Dialog
@@ -153,47 +167,51 @@ export default function OrderTable({
             <>
               {canSearch && <TextField variant="outlined" fullWidth value={query} onChange={(e) => setQuery(e.target.value)} />}
               <Table aria-labelledby="tableTitle">
-                <OrderTableHead headCells={headCells} hasAction={hasAction} />
+                <OrderTableHead
+                  headCells={headCells}
+                  hasAction={hasAction}
+                  onRequestSort={handleRequestSort}
+                  order={order}
+                  orderBy={orderBy}
+                />
                 <TableBody>
-                  {data.map((row, index) => {
-                    return (
-                      <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
-                        {Object.entries(row).map(([key, value]) => (
-                          <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
-                        ))}
-                        {hasAction && (
-                          <TableCell>
-                            <Stack direction={'row'} gap={'10px'}>
-                              {canView && (
-                                <IconButton color="success" size="small" onClick={() => handlePressAction('VIEW', row)}>
-                                  <EyeOutlined style={{ fontSize: '1.15rem' }} />
-                                </IconButton>
-                              )}
+                  {sortedData.map((row, index) => (
+                    <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
+                      {Object.entries(row).map(([key, value]) => (
+                        <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
+                      ))}
+                      {hasAction && (
+                        <TableCell>
+                          <Stack direction={'row'} gap={'10px'}>
+                            {canView && (
+                              <IconButton color="success" size="small" onClick={() => handlePressAction('VIEW', row)}>
+                                <EyeOutlined style={{ fontSize: '1.15rem' }} />
+                              </IconButton>
+                            )}
 
-                              {canEdit && (
-                                <IconButton color="warning" size="small" onClick={() => handlePressAction('EDIT', row)}>
-                                  <EditOutlined style={{ fontSize: '1.15rem' }} />
-                                </IconButton>
-                              )}
+                            {canEdit && (
+                              <IconButton color="warning" size="small" onClick={() => handlePressAction('EDIT', row)}>
+                                <EditOutlined style={{ fontSize: '1.15rem' }} />
+                              </IconButton>
+                            )}
 
-                              {canDelete && (
-                                <IconButton
-                                  color="error"
-                                  size="small"
-                                  onClick={() => {
-                                    setProneToDelete(row);
-                                    handleClickOpen();
-                                  }}
-                                >
-                                  <DeleteOutlined style={{ fontSize: '1.15rem' }} />
-                                </IconButton>
-                              )}
-                            </Stack>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    );
-                  })}
+                            {canDelete && (
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={() => {
+                                  setProneToDelete(row);
+                                  handleClickOpen();
+                                }}
+                              >
+                                <DeleteOutlined style={{ fontSize: '1.15rem' }} />
+                              </IconButton>
+                            )}
+                          </Stack>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </>

@@ -8,6 +8,7 @@ import Form from 'components/form';
 import { useEffect, useState } from 'react';
 import api from 'api';
 import Snackbar from 'components/Snackbar';
+import { headCellObjects } from 'utils/misc';
 
 export default function MaintenanceSchedule() {
   const [formView, setFormView] = useState(false);
@@ -24,7 +25,15 @@ export default function MaintenanceSchedule() {
   const [aircrafts, setAircrafts] = useState([]);
   const [technicians, setTechnicians] = useState([]);
 
-  const headCells = ['ID', 'Description', 'Aircraft', 'Start Time', 'End Time', 'Assigned To', 'Status'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'activity_type', label: 'Description' },
+    { id: 'aircraft', label: 'Aircraft' },
+    { id: 'start_datetime', label: 'Start Time' },
+    { id: 'end_datetime', label: 'End Time' },
+    { id: 'technician_name', label: 'Assigned To' },
+    { id: 'status', label: 'Status' }
+  ];
 
   const handleFetchActivities = () => {
     api.maintenance.get().then((response) => {

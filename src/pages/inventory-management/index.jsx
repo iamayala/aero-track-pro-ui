@@ -20,7 +20,14 @@ export default function Inventory() {
     severity: 'error'
   });
 
-  const headCells = ['ID', 'Part Number', 'Part Name', 'Manufacturer', 'Quantity', 'Status'];
+  const headCells = [
+    { id: 'id', label: 'ID' },
+    { id: 'part_number', label: 'Part Number' },
+    { id: 'part_name', label: 'Part Name' },
+    { id: 'manufacturer', label: 'Manufacturer' },
+    { id: 'quantity', label: 'Quantity' },
+    { id: 'status', label: 'Status' }
+  ];
 
   const handleFetchParts = () => {
     api.part.get().then((response) => {
