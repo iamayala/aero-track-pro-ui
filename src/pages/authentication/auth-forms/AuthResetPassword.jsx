@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { startTransition } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -14,7 +14,6 @@ import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
 // third party
 import * as Yup from 'yup';
@@ -32,13 +31,31 @@ import { useAuth } from 'hooks/use-auth';
 
 // ============================|| JWT - LOGIN ||============================ //
 
-export default function AuthLogin({ isDemo = false }) {
-  const [checked, setChecked] = React.useState(false);
+export default function AuthResetPassword() {
   const [error, setError] = React.useState('');
 
-  const [showPassword, setShowPassword] = React.useState(false);
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
+  const [searchParams] = useSearchParams();
+
+  const [showPassword, setShowPassword] = React.useState({
+    o: false,
+    n: false,
+    c: false
+  });
+
+  const handleClickShowPassword = (state, value) => {
+    const stateMapping = {
+      OLD: 'o',
+      NEW: 'n',
+      CONFIRM: 'c'
+    };
+
+    const key = stateMapping[state];
+    if (key) {
+      setShowPassword((prevState) => ({
+        ...prevState,
+        [key]: value
+      }));
+    }
   };
 
   const handleMouseDownPassword = (event) => {
@@ -57,26 +74,24 @@ export default function AuthLogin({ isDemo = false }) {
 
   const formik = useFormik({
     initialValues: {
-      email: '',
+      opassword: '',
       password: '',
+      cpassword: '',
       submit: null
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-      password: Yup.string().max(255).required('Password is required')
+      opassword: Yup.string().max(255).required('Old password is required'),
+      password: Yup.string().max(255).required('New password is required'),
+      cpassword: Yup.string()
+        .max(255)
+        .required('Confirm new password')
+        .oneOf([Yup.ref('password')], 'Your passwords should match')
     }),
     onSubmit: (values) => {
       api.auth
-        .login({ email: values.email, password: values.password })
-        .then((response) => {
-          const user = response.data.user;
-          if (user.password_reset_required) {
-            handleNavigation(`/reset-password?id=${user.id}`);
-          } else {
-            auth.saveUserToLocalStorage(user).then(() => {
-              handleNavigation('/dashboard/default');
-            });
-          }
+        .updatePassword({ id: searchParams.get('id'), currentPassword: values.opassword, newPassword: values.password })
+        .then(() => {
+          window.location.replace(`/free/login`);
         })
         .catch((error) => {
           setError(error.response.data.error);
@@ -92,33 +107,47 @@ export default function AuthLogin({ isDemo = false }) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Stack spacing={1}>
-            <InputLabel htmlFor="email-login">Email Address</InputLabel>
+            <InputLabel htmlFor="password-login">Old Password</InputLabel>
             <OutlinedInput
-              id="email-login"
-              type="email"
-              value={formik.values.email}
-              name="email"
+              fullWidth
+              error={Boolean(formik.touched.opassword && formik.errors.opassword)}
+              id="n-password-reset"
+              type={showPassword.o ? 'text' : 'password'}
+              value={formik.values.opassword}
+              name="opassword"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              placeholder="Enter email address"
-              fullWidth
-              error={Boolean(formik.touched.email && formik.errors.email)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => handleClickShowPassword('OLD', showPassword.o === true ? false : true)}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                    color="secondary"
+                  >
+                    {showPassword.o ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              placeholder="Enter old password"
             />
           </Stack>
-          {formik.touched.email && formik.errors.email && (
-            <FormHelperText error id="standard-weight-helper-text-email-login">
-              {formik.errors.email}
+          {formik.touched.opassword && formik.errors.opassword && (
+            <FormHelperText error id="standard-weight-helper-text-password-login">
+              {formik.errors.opassword}
             </FormHelperText>
           )}
         </Grid>
+
         <Grid item xs={12}>
           <Stack spacing={1}>
             <InputLabel htmlFor="password-login">Password</InputLabel>
             <OutlinedInput
               fullWidth
               error={Boolean(formik.touched.password && formik.errors.password)}
-              id="-password-login"
-              type={showPassword ? 'text' : 'password'}
+              id="n-password-reset"
+              type={showPassword.n ? 'text' : 'password'}
               value={formik.values.password}
               name="password"
               onBlur={formik.handleBlur}
@@ -127,12 +156,12 @@ export default function AuthLogin({ isDemo = false }) {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={() => handleClickShowPassword('NEW', showPassword.n === true ? false : true)}
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                     color="secondary"
                   >
-                    {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                    {showPassword.n ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                   </IconButton>
                 </InputAdornment>
               }
@@ -146,30 +175,47 @@ export default function AuthLogin({ isDemo = false }) {
           )}
         </Grid>
 
-        <Grid item xs={12} sx={{ mt: -1 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={(event) => setChecked(event.target.checked)}
-                  name="checked"
-                  color="primary"
-                  size="small"
-                />
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <InputLabel htmlFor="password-login">Confirm Password</InputLabel>
+            <OutlinedInput
+              fullWidth
+              error={Boolean(formik.touched.cpassword && formik.errors.cpassword)}
+              id="c-password-reset"
+              type={showPassword.c ? 'text' : 'password'}
+              value={formik.values.cpassword}
+              name="cpassword"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => handleClickShowPassword('CONFIRM', !showPassword.c)}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                    color="secondary"
+                  >
+                    {showPassword.c ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  </IconButton>
+                </InputAdornment>
               }
-              label={<Typography variant="h6">Keep me sign in</Typography>}
+              placeholder="Confirm password"
             />
-            <Link variant="h6" component={RouterLink} color="text.primary">
-              Forgot Password?
-            </Link>
           </Stack>
+          {formik.touched.cpassword && formik.errors.cpassword && (
+            <FormHelperText error id="standard-weight-helper-text-password-login">
+              {formik.errors.cpassword}
+            </FormHelperText>
+          )}
         </Grid>
+
         {formik.errors.submit && (
           <Grid item xs={12}>
             <FormHelperText error>{formik.errors.submit}</FormHelperText>
           </Grid>
         )}
+
         <Grid item xs={12}>
           <AnimateButton>
             <Button
@@ -181,7 +227,7 @@ export default function AuthLogin({ isDemo = false }) {
               variant="contained"
               color="primary"
             >
-              Login
+              Reset Password
             </Button>
           </AnimateButton>
         </Grid>
@@ -190,4 +236,4 @@ export default function AuthLogin({ isDemo = false }) {
   );
 }
 
-AuthLogin.propTypes = { isDemo: PropTypes.bool };
+AuthResetPassword.propTypes = { isDemo: PropTypes.bool };

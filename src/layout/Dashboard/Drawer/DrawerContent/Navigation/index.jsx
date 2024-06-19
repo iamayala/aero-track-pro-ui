@@ -5,11 +5,36 @@ import Box from '@mui/material/Box';
 // project import
 import NavGroup from './NavGroup';
 import menuItem from 'menu-items';
+import { useAuth } from 'hooks/use-auth';
 
 // ==============================|| DRAWER CONTENT - NAVIGATION ||============================== //
 
 export default function Navigation() {
-  const navGroups = menuItem.items.map((item) => {
+  const auth = useAuth();
+
+  const removeGroupsByIds = (arr, ids) => {
+    console.log(arr);
+    return arr.filter((item) => !ids.includes(item.id));
+  };
+
+  let updatedMenuItems = [];
+
+  switch (auth.cookieman?.role) {
+    case 'inventory_manager':
+      updatedMenuItems = removeGroupsByIds(menuItem.items, ['task-management', 'aircraft', 'users']);
+      break;
+    case 'activity_manager':
+      updatedMenuItems = removeGroupsByIds(menuItem.items, ['parts', 'users']);
+      break;
+    case 'technician':
+      updatedMenuItems = removeGroupsByIds(menuItem.items, ['parts', 'aircraft', 'users', 'report']);
+      break;
+    default:
+      updatedMenuItems = menuItem.items;
+      break;
+  }
+
+  const navGroups = updatedMenuItems.map((item) => {
     switch (item.type) {
       case 'group':
         return <NavGroup key={item.id} item={item} />;

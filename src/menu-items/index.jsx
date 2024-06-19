@@ -7,6 +7,7 @@ import report from './report';
 import document from './document';
 import certification from './certification';
 import profile from './profile';
+import users from './users';
 
 // ==============================|| MENU ITEMS ||============================== //
 
@@ -16,6 +17,7 @@ const menuItems = {
     task,
     aircraft,
     part,
+    users,
     document,
     // certification,
     report

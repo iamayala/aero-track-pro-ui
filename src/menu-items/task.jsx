@@ -21,20 +21,6 @@ const task = {
       type: 'item',
       url: '/maintenance-schedule',
       icon: icons.CalendarOutlined
-    },
-    // {
-    //   id: 'task-order',
-    //   title: 'Task and Work Order',
-    //   type: 'item',
-    //   url: '/task-order',
-    //   icon: icons.ProfileOutlined
-    // },
-    {
-      id: 'manage-staff',
-      title: 'Manage Staff',
-      type: 'item',
-      url: '/manage-staff',
-      icon: icons.TeamOutlined
     }
   ]
 };
