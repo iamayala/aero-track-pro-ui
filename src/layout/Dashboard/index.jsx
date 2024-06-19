@@ -14,6 +14,8 @@ import Loader from 'components/Loader';
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
 
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
+import { useAuth } from 'hooks/use-auth';
+import { Button, Typography } from '@mui/material';
 
 // ==============================|| MAIN LAYOUT ||============================== //
 
@@ -27,6 +29,32 @@ export default function DashboardLayout() {
   }, [downXL]);
 
   if (menuMasterLoading) return <Loader />;
+
+  const userData = sessionStorage.getItem('cookieman');
+
+  if (!userData)
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          gap: '15px'
+        }}
+      >
+        <Typography>You are not authorized to view this page</Typography>
+        <Button
+          onClick={() => {
+            window.location.replace(`/free/login`);
+          }}
+        >
+          Go to login
+        </Button>
+      </Box>
+    );
 
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
