@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from 'hooks/use-auth';
 import { downloadPdfDocument } from 'utils/downloadfn';
 import { reportHtmlForm } from 'utils/report';
+import { TableType } from 'utils/enums';
 
 export default function AircraftMonitoring() {
   const [aircrafts, setAircrafts] = useState([]);
@@ -25,7 +26,7 @@ export default function AircraftMonitoring() {
     { id: 'range', label: 'Range' },
     { id: 'speed', label: 'Speed' },
     { id: 'fuel', label: 'Fuel' },
-    { id: 'status', label: 'Health' }
+    { id: 'status', label: 'Status' }
   ];
 
   const handleFetchFlights = () => {
@@ -92,7 +93,12 @@ export default function AircraftMonitoring() {
       <PageTitle title="Aircraft Monitoring" hasButton={true} buttonLabel="Download Report" onPressButton={() => onDownloadCSV()} />
       <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
       {aircrafts.length > 0 && activeAircraft && (
-        <OrdersTable headCells={headCells} data={mappedData.filter((item) => item.aircraft_id === activeAircraft)} hasAction={false} />
+        <OrdersTable
+          headCells={headCells}
+          data={mappedData.filter((item) => item.aircraft_id === activeAircraft)}
+          hasAction={false}
+          type={TableType.FLIGHTS}
+        />
       )}
     </Grid>
   );

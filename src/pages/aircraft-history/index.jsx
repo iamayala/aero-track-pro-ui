@@ -6,7 +6,7 @@ import { fDateTime } from 'utils/format-time';
 import FormSelect from 'components/FormSelect';
 import { useEffect, useState } from 'react';
 import api from 'api';
-import { headCellObjects } from 'utils/misc';
+import { TableType } from 'utils/enums';
 
 export default function AircraftHistory() {
   const [aircrafts, setAircrafts] = useState([]);
@@ -62,7 +62,12 @@ export default function AircraftHistory() {
       <PageTitle title="History and Logbook" hasButton={false} buttonLabel="Download CSV" onPressButton={() => {}} />
 
       <FormSelect options={aircrafts} handleChange={(e) => setActiveAircraft(e.target.value)} value={activeAircraft} />
-      <OrdersTable headCells={headCells} data={mappedData.filter((item) => item.aircraft_id === activeAircraft)} hasAction={false} />
+      <OrdersTable
+        headCells={headCells}
+        data={mappedData.filter((item) => item.aircraft_id === activeAircraft)}
+        hasAction={false}
+        type={TableType.MAINTENANCE}
+      />
     </Grid>
   );
 }

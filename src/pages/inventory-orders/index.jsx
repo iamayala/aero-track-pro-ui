@@ -6,6 +6,7 @@ import OrdersTable from '../dashboard/OrdersTable';
 import api from 'api';
 import React, { useState } from 'react';
 import Snackbar from 'components/Snackbar';
+import { TableType } from 'utils/enums';
 
 export default function InventoryOrders() {
   const [mappedData, setMappedData] = useState([]);
@@ -97,6 +98,7 @@ export default function InventoryOrders() {
         handleRefresh={handleFetchOrders}
         canEdit={false}
         canView={false}
+        type={TableType.ORDERS}
       />
     </Grid>
   );

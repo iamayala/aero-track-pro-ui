@@ -7,6 +7,7 @@ import api from 'api';
 import { useEffect, useState } from 'react';
 import Form from 'components/form';
 import Snackbar from 'components/Snackbar';
+import { TableType } from 'utils/enums';
 
 export default function Inventory() {
   const [formView, setFormView] = useState(false);
@@ -172,7 +173,12 @@ export default function Inventory() {
           onCancel={() => setFormView(false)}
         />
       ) : (
-        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(action, row) => handleOnActionClick(row, action)} />
+        <OrdersTable
+          headCells={headCells}
+          data={mappedData}
+          onPressAction={(action, row) => handleOnActionClick(row, action)}
+          type={TableType.PARTS}
+        />
       )}
     </Grid>
   );

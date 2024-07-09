@@ -8,7 +8,7 @@ import Form from 'components/form';
 import { useEffect, useState } from 'react';
 import api from 'api';
 import Snackbar from 'components/Snackbar';
-import { headCellObjects } from 'utils/misc';
+import { TableType } from 'utils/enums';
 
 export default function MaintenanceSchedule() {
   const [formView, setFormView] = useState(false);
@@ -249,7 +249,12 @@ export default function MaintenanceSchedule() {
           onCancel={() => setFormView(false)}
         />
       ) : (
-        <OrdersTable headCells={headCells} data={mappedData} onPressAction={(action, row) => handleOnActionClick(row, action)} />
+        <OrdersTable
+          headCells={headCells}
+          data={mappedData}
+          onPressAction={(action, row) => handleOnActionClick(row, action)}
+          type={TableType.MAINTENANCE}
+        />
       )}
     </Grid>
   );

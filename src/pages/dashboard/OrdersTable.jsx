@@ -18,6 +18,7 @@ import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TableSortLabel, TextField } from '@mui/material';
 import useSortableData from './Sorting';
+import { TableType } from 'utils/enums';
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
@@ -46,26 +47,104 @@ function OrderTableHead({ headCells, hasAction, onRequestSort, order, orderBy })
   );
 }
 
-function OrderStatus({ status }) {
+function OrderStatus({ status, type }) {
   let color;
   let title;
 
-  switch (status) {
-    case 0:
-      color = 'warning';
-      title = 'Pending';
-      break;
-    case 1:
-      color = 'success';
-      title = 'Active';
-      break;
-    case 2:
-      color = 'error';
-      title = 'Rejected';
-      break;
-    default:
-      color = 'primary';
-      title = 'None';
+  if (type === TableType.ORDERS) {
+    switch (status) {
+      case 'placed':
+        color = 'secondary';
+        title = 'Placed';
+        break;
+      case 'shipped':
+        color = 'warning';
+        title = 'Shipped';
+        break;
+      case 'delivered':
+        color = 'success';
+        title = 'Delivered';
+        break;
+      case 'cancelled':
+        color = 'error';
+        title = 'Cancelled';
+        break;
+      default:
+        color = 'primary';
+        title = 'None';
+    }
+  } else if (type === TableType.PARTS) {
+    switch (status) {
+      case 'reserved':
+        color = 'secondary';
+        title = 'reserved';
+        break;
+      case 'in_use':
+        color = 'warning';
+        title = 'In Use';
+        break;
+      case 'available':
+        color = 'success';
+        title = 'Available';
+        break;
+      case 'damaged':
+        color = 'error';
+        title = 'Damaged';
+        break;
+      default:
+        color = 'primary';
+        title = 'None';
+    }
+  } else if (type === TableType.MAINTENANCE) {
+    switch (status) {
+      case 'scheduled':
+        color = 'secondary';
+        title = 'Scheduled';
+        break;
+      case 'in_progress':
+        color = 'warning';
+        title = 'In Progress';
+        break;
+      case 'completed':
+        color = 'success';
+        title = 'Completed';
+        break;
+      default:
+        color = 'primary';
+        title = 'None';
+    }
+  } else if (type === TableType.FLIGHTS) {
+    switch (status) {
+      case 'scheduled':
+        color = 'secondary';
+        title = 'Scheduled';
+        break;
+      case 'completed':
+        color = 'success';
+        title = 'Completed';
+        break;
+      default:
+        color = 'primary';
+        title = 'None';
+    }
+  } else {
+    switch (status) {
+      case 0:
+        color = 'warning';
+        title = 'Pending';
+        break;
+      case 1:
+        color = 'success';
+        title = 'Active';
+        break;
+      case 2:
+        color = 'error';
+        title = 'Rejected';
+        break;
+      default:
+        color = 'primary';
+        title = 'None';
+    }
   }
 
   return (
@@ -87,7 +166,8 @@ export default function OrderTable({
   canDelete = true,
   onPressAction,
   handleRefresh,
-  canSearch = false
+  canSearch = false,
+  type
 }) {
   const handlePressAction = useCallback(
     (action, row) => {
@@ -178,7 +258,7 @@ export default function OrderTable({
                   {sortedData.map((row, index) => (
                     <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={index}>
                       {Object.entries(row).map(([key, value]) => (
-                        <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} /> : value}</TableCell>
+                        <TableCell key={key}>{key === 'status' ? <OrderStatus status={value} type={type} /> : value}</TableCell>
                       ))}
                       {hasAction && (
                         <TableCell>
@@ -235,4 +315,4 @@ OrderTable.propTypes = {
 
 OrderTableHead.propTypes = { headCells: PropTypes.arrayOf(PropTypes.any), hasAction: PropTypes.bool };
 
-OrderStatus.propTypes = { status: PropTypes.number };
+OrderStatus.propTypes = { status: PropTypes.number, type: TableType };
