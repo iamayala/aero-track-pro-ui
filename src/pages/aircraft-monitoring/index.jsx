@@ -70,10 +70,13 @@ export default function AircraftMonitoring() {
   };
 
   const onDownloadCSV = () => {
+    const _headCells = headCells.map((cell) => {
+      return cell.label;
+    });
     downloadPdfDocument(
       reportHtmlForm(
         mappedData.filter((item) => item.aircraft_id === activeAircraft),
-        headCells,
+        _headCells,
         docInfo
       ),
       docInfo.title + ` ${new Date().toISOString()}`

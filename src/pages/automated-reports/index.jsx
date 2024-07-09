@@ -10,28 +10,6 @@ import { useAuth } from 'hooks/use-auth';
 import { downloadPdfDocument } from 'utils/downloadfn';
 import { reportHtmlForm } from 'utils/report';
 
-const data = [
-  {
-    id: 1,
-    activity_type: 'maintenance',
-    activity_description: 'Routine maintenance check',
-    aircraft_id: 1,
-    technician_id: 'technician1',
-    start_datetime: '2024-05-10T06:00:00.000Z',
-    end_datetime: '2024-05-10T10:00:00.000Z',
-    parts_replaced: ['part1', 'part2'],
-    issues_resolved: 'No issues found',
-    status: 'completed',
-    created_at: '2024-05-10T18:36:52.000Z',
-    updated_at: '2024-05-10T18:43:49.000Z',
-    aircraft_manufacturer: 'Boeing',
-    aircraft_model: '737',
-    registration_number: 'ABC122',
-    technician_name: 'james jr. cameron',
-    technician_email: 'jamescameron@aero.pro'
-  }
-];
-
 export default function AutomatedReports() {
   const [mappedData, setMappedData] = useState([]);
 
@@ -77,7 +55,10 @@ export default function AutomatedReports() {
   };
 
   const onDownloadCSV = () => {
-    downloadPdfDocument(reportHtmlForm(mappedData, headCells, docInfo), docInfo.title + ` ${new Date().toISOString()}`);
+    const _headCells = headCells.map((cell) => {
+      return cell.label;
+    });
+    downloadPdfDocument(reportHtmlForm(mappedData, _headCells, docInfo), docInfo.title + ` ${new Date().toISOString()}`);
 
     setTimeout(() => {
       window.location.reload();

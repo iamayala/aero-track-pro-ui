@@ -51,7 +51,10 @@ export default function ComplianceReports() {
   };
 
   const onDownloadCSV = () => {
-    downloadPdfDocument(reportHtmlForm(mappedData, headCells, docInfo), docInfo.title + ` ${new Date().toISOString()}`);
+    const _headCells = headCells.map((cell) => {
+      return cell.label;
+    });
+    downloadPdfDocument(reportHtmlForm(mappedData, _headCells, docInfo), docInfo.title + ` ${new Date().toISOString()}`);
 
     setTimeout(() => {
       window.location.reload();

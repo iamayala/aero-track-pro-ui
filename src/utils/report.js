@@ -3,6 +3,7 @@
 import fontRegular from '../assets/fonts/sofia/sofia-pro-regular-az.otf';
 
 export const reportHtmlForm = (bodyRowData, tableHeaders, docInfo) => {
+  console.log();
   return `
   <html>
   <head>
