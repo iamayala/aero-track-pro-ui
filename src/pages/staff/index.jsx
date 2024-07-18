@@ -172,9 +172,9 @@ export default function Staff() {
               type: 'select',
               required: true,
               options: [
-                { label: 'Admin', value: 'admin' },
                 { label: 'Technician', value: 'technician' },
-                { label: 'Staff', value: 'staff' }
+                { label: 'Inventory Manager', value: 'inventory_manager' },
+                { label: 'Activity Manager', value: 'activity_manager' }
               ],
               initialValue: selected?.role || ''
             }
